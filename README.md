@@ -3,7 +3,7 @@ Python scripts to develop and optimise a filter-based species distribution model
 
 © 2016, Sacha Gobeyn (sacha.gobeyn@ugent.be or sachagobeyn@gmail.com). Licensed under CC BY 4.0 Creative Commons.
 
-Details: Script can be run from a (I)python editor or command line
+Details: Script can be run from a (I)python editor or command line. Designed for batch simulations
  
 Publication: This code is coupled to a publication, it is advised to first read the publication.
 
