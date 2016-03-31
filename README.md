@@ -13,7 +13,7 @@ Usage:
    -flags: 
 
   * parameterfile
-   -inpudata                  .csv file with inputdata
+   -inpudata \t .csv file with inputdata
 
    -taxon                     name of taxon to develop and optimise model
  
