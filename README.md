@@ -9,7 +9,9 @@ Usage:
 
 Requirements:
   * Python 2.7.10
+  
   * Numpy 1.9.2  
+  
   * Pandas 0.16.2
 
   
