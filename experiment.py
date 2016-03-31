@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Mar 10 15:55:02 2016
-
-@author: sacha
+Description:  
+@author: sacha gobeyn (sacha.gobeyn@ugent.be or sachagobeyn@gmail.com)
 """
 
 import pandas as pd

@@ -1,25 +1,9 @@
 """
 Created on Tue Feb 26 15:38:35 2015
-
-@author: Sacha
+Description:  
+@author: sacha gobeyn (sacha.gobeyn@ugent.be or sachagobeyn@gmail.com)
 """
-" ========================== Environmental models =========================== "
-" Version 1.0. (SG):    Implemented trapezoid model and initial interference  "
-" 26/02/2015            "
-""
-" Package includes:     Environmental Model:    Trapezoid "
-"                       Inteference:            Minimum "
-"                                               Product "
-"                                               Mahalanobis"
-""
-" Input: "
-"   X                   array([floats])     Vector of X-coordinates "
-"   Y                   array([floats])     Vector of Y-coordinates "
-"   initial             array([floats])     Vector of initial persence "
-"   env_input           dataframe           Dataframe with inputs per X,Y "
-"   model_parameters    dictionary          Parameters of the environmental model "
-"   mask                array([binary])     Mask of calculation nodes "
-" =========================================================================== "
+
 import pandas as pd
 import numpy as np
 import sys

@@ -1,5 +1,5 @@
-inputdata	DATA/inputdata.csv
-taxon		Acari
+inputdata	inputdata.csv
+taxon		Baetidae
 variables	considered_variables.csv
 resmap		Results
 ga_settings	gasettings.txt

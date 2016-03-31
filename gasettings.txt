@@ -3,5 +3,5 @@ objective_function AICc
 ncpu	-1
 number_of_chromosomes 100
 maximum_runs  100
-GA_criteria 30
+stop_criteria 30
 full_output False

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Apr 14 11:17:52 2015
-
-@author: Sacha
+Description:  
+@author: sacha gobeyn (sacha.gobeyn@ugent.be or sachagobeyn@gmail.com)
 """
+
 import numpy as np
 from copy import deepcopy
 # x = predicitions

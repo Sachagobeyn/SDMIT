@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Oct  9 11:03:22 2015
-
-@author: sacha
+Description:  
+@author: sacha gobeyn (sacha.gobeyn@ugent.be or sachagobeyn@gmail.com)
 """
 import os
 import numpy as np

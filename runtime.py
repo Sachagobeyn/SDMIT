@@ -1,23 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Oct 23 09:22:33 2014
-
-@author: Sacha Gobeyn (sachagobeyn@gmail.com)
+Description:  
+@author: sacha gobeyn (sacha.gobeyn@ugent.be or sachagobeyn@gmail.com)
 """
-" Version 1 (SG): Initial implementation "
-
-" Information "
-# comment:
-#   class to display remaining predicted runtime for iterations from 0 to n
-# input:
-#   n = number of iterations, 
-#   p = delta percentage at which you want to print out
-# use:
-#   t = runtime(1000,5)
-#   for i in rang(0,n):
-#       ... some code ...
-#       t.iteration(i)
-#   t.close_timer()
 
 import time
 import datetime

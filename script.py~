@@ -5,103 +5,6 @@ Description:
 @author: sacha gobeyn (sacha.gobeyn@ugent.be or sachagobeyn@gmail.com)
 """
 
-""" 
-------------
-INSTRUCTIONS
------------- 
-
-      Model is run by running 'script.py' in Python OR in command line 'python script.py -flags'
-      Implemented for batch simulations
-      The "parameterfile.txt"-file is read to the model and optimisation
-      
-      -----------------
-      parameterfile.txt
-      -----------------
-      
-      inpudata                  .csv file with inputdata
-
-      taxon                     name of taxon to develop and optimise model
- 
-      variables                 .csv file with variables to consider in model
-
-      resmap                    name of map to print results
- 
-      ga_settings               name of file containing options for genetic optimisation algorithm
-
-      md_settings               name of file containing options for model development
-      
-      ------------
-      inpudata.csv
-      ------------
-      list with columns (ID,taxon,abundance,variable,value,fold)
-      
-      ID                       ID of point
-      
-      taxon                    name of observed taxon
-      
-      abundance                abundance of taxon
-      
-      variable                 name of measured variable (names must be compatible with variables file in parameterfile.txt)
-      
-      value                    value of the variable
-      
-      fold                     use data either for model development (developmen) or optimisation (optimisation)
-      
-      -------------
-      variables.csv
-      -------------
-      list with columns (variable,consider)
-      
-      variable                 name of measured variable (names must be compatible with variables file in parameterfile.txt)
-      
-      consider                 consider variable in model dev. and opt.
-      
-      -----------------
-      modelsettings.txt
-      -----------------
-         
-      a1,a2,a3,a4               percentiles of enviromental data for parameters of unimodal non-uniform habitat preference curves
-
-      --------------
-      gasettings.txt             (for detailed information, see Haupt and Haupt, 2004)
-      --------------
-      
-      number_of_chromosomes     number of chromosomes to run GA
-    
-      selection_rate            selection rate of population per generation
-     
-      crossover_rate            crossover rate of population
-     
-      mutation_rate             mutation rate of genes in chromosomes
-     
-      objective_function        the objective function to minimize
-     
-      maximum_runs              maximum number of generations to calculate
-     
-      stop_criteria             number of generations for which no improvement is observed in the best value of the objective function.
-     
-      ncpu                      number of cpu's to use on machine (-1 = all)
-     
-      mode                      binary (a continues varient is implemented but not properly tested)
-    
-      full_output               print all outputs of every chromosoom tested
-     
-      nan_value                 nan-value for objective and evalutation criteria for infeasible solutions (has to be a number, int or float). Typically set way above the values of the -to minize!- objective function
-    
-      ------
-      flags
-      ------
-      
-      -inputdata                 name of inputdata file
-      
-      -variables                 name of variables file
-      
-      -taxon                     name of the taxon
-    
-      -resmap                    name of directory to write output
-      
-"""
-
 import pandas as pd
 pd.set_option('chained_assignment',None)
 import numpy as np
@@ -200,7 +103,7 @@ def default_settings(filetype):
         
         "additional"
         ga_settings["maximum_runs"] = 100
-        ga_settings["stop_criteria"] = 30
+        ga_settings["GA_criteria"] = 30
         ga_settings["ncpu"] = -1 #multiprocessor with all available processors
         ga_settings["mode"] = "binary"
         ga_settings["full_output"] = False
@@ -247,8 +150,10 @@ def overwrite_arguments(arguments):
     Arguments:
         'arguments' (dictionary):
         
-            'inputdata' (str): name of inputdata file
-            'variables' (str): name of variables file
+            'inputdata' (str): name of inputdata 
+            NOTE: structure inputdata should be conform Section XX tutorial
+            'variables' (str): name of variables
+            NOTE: structure variables should be conform Section XX tutorial
             'taxon' (str): name of the taxon
             'resmap' (str): name of directory to write output
             
