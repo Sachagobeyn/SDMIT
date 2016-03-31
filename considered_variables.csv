@@ -1,0 +1,26 @@
+variable,consider
+Temperature,1
+Conductivity,1
+TDS,0
+pH,1
+Chlorophyll,1
+Cl-,1
+DO,1
+DO Sat,0
+Turbidity,1
+COD,1
+NO3--N,1
+NH4+-N,1
+Elevation,1
+velocity,1
+Variation in width,0
+Variation in flow,0
+Sludge layer,0
+Bank Slope,0
+Boulder,0
+Cobble,0
+Gravel,0
+Sand,0
+Silt&clay,0
+Total N ,0
+Total P ,0

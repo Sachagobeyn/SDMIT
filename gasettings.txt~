@@ -1,0 +1,5 @@
+nan_value	100000000000000
+objective_function AIC
+ncpu	4
+number_of_chromosomes 100
+
