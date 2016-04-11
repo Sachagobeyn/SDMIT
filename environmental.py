@@ -8,6 +8,35 @@ import pandas as pd
 import numpy as np
 import sys
 
+def environmental_filter_model(X,Y,initial,env_input,species_parameters,model_parameters):
+
+    #initial = initial*mask if mask!=None else initial
+    
+    " Initialize output "
+    output = np.array(initial.copy(),dtype=float)
+    
+    " Points "
+    points = np.unique(env_input["ID"])
+    
+    for i in range(0,len(points)):
+        
+        " initiate calculation point "
+        pixel = Pixel(env_input["X"][env_input["ID"]==points[i]],env_input["Y"][env_input["ID"]==points[i]])
+        
+        " contruct models "
+        pixel.construct_model(env_input,species_parameters["environmental_parameters"])
+
+        " calculate model according to shape"
+        pixel.run_model()
+        
+        " interference "
+        pixel.interference(model_parameters["interference"],threshold=0.5)
+        
+        " project on raster "
+        output = pixel.project_to_raster(output,X,Y)
+        
+    return output
+
 def mahalanobis_distance(x,y,normalise = 1.):
     
     d  = np.array(x-y)
@@ -37,14 +66,19 @@ def euclidean_distance(x,y,normalise = 1.0):
         HSI = distance
     return HSI
       
-class EFM():
+class Pixel():
     
-    def __init__(self,env_input,model_parameters):
+    def __init__(self,X=0.,Y=0.):
         
-        self.model = env_input[["ID","taxon","variable","value"]].merge(model_parameters[["variable","a1","a2","a3","a4","type"]],on="variable",how="right")
-        # number of variables
-        number_of_variables = len(self.model["variable"].unique())
-        self.nos = number_of_variables
+        # we should really fix these lines of code
+        try:
+            self.X = X.tolist()[0]
+            self.Y = Y.tolist()[0]
+        except:
+            self.X = X
+            self.Y = Y
+                        
+        self.HSI = np.nan
         
     def save_model(self,resname,mode="w"):
         
@@ -56,7 +90,16 @@ class EFM():
     def get_model(self):
         
         return self.model
-
+        
+    def construct_model(self,env_input,model_parameters):
+        
+        self.model = env_input[["variable","value"]].merge(model_parameters[["variable","a1","a2","a3","a4","type"]],on="variable",how="right")
+        # number of variables
+        number_of_variables = len(self.model["variable"].unique())
+        self.nos = number_of_variables
+        
+        return self.model
+        
     def run_models(self):
         
         un_types = self.model["type"].unique().tolist()
@@ -72,8 +115,6 @@ class EFM():
                 self.right(cond)
             if i == "line":
                 self.line(cond)
-        
-        self.model = self.model[~self.model["HSI"].isnull()]
         
         return self.model
         
@@ -149,7 +190,7 @@ class EFM():
         cond=(self.model["value"]>self.model["a4"]) & condition
         self.model["HSI"][cond]=0.
 
-    def interference(self,mode):
+    def interference(self,mode,cov=pd.DataFrame(),threshold=np.nan):
         """interference
     
         Keyword arguments:
@@ -163,27 +204,47 @@ class EFM():
             
             if mode == "minimum":
                 
-                print("implement")
+                self.HSI = float(np.min(self.model["HSI"]))
                 
             if mode == "product":
                 
-                print("implement")
+                self.HSI = float(np.product(np.array(self.model["HSI"][~self.model["HSI"].isnull()])))
                 
             if mode == "mean":
                 
-                return self.model.groupby(["ID","taxon"]).aggregate({"HSI":np.mean}).reset_index()
+                self.HSI = float(np.mean(np.array(self.model["HSI"])))
                 
             if mode == "squared product":
 
-                return self.model.groupby(["ID","taxon"]).aggregate({"HSI":lambda x:(np.prod(x))**(1./self.nos)}).reset_index()
+                self.HSI = (float(np.prod(np.array(self.model["HSI"]))))**(1./self.nos)
+            
+            if mode == "mahalanobis":
+            
+                if cov.empty:
+                    message = "Please provide a covariance matrix"
+                    sys.exit(message)
+                else:
+                    # prepare
+                    var = self.model["variable"].unique().tolist()                    
+                    cov = cov.reset_index()
+                    self.model = self.model.merge(cov,on="variable",how="left")
+                    self.HSI = mahalanobis_distance(self.model["HSI"],np.ones(len(var)))
 
             if mode == "euclidean":
                     
-                return self.model.groupby(["ID","taxon"]).aggregate({"HSI":lambda x: 1-np.sqrt(np.sum((1.-x)**2))/np.sqrt(len(x))}).reset_index()
+                    var = self.model["variable"].unique().tolist() 
+                    # if one of the variables, out of range, not present
+                    if float(np.min(self.model["HSI"]))==0.:
+                        self.HSI = 0.
+                    else:
+                        self.HSI = euclidean_distance(self.model["HSI"],np.ones(len(var)))
                    
         else:
             
-            return np.nan
+            self.HSI = np.nan
+            
+        return self.HSI
+    
              
     def threshold(self,threshold):
         

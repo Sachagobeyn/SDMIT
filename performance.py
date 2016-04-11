@@ -10,7 +10,7 @@ from copy import deepcopy
 # x = predicitions
 # y = observations
 
-def calculate_performance(model_output,K,evaluate=False):
+def calculate_performance(model_output,variables,nan_values):
     """ 
     Calculate peformance based on the simulated HSI and observed presence/absence (abundance)
     NOTE: Multiple self-defined formula's can be defined and saved in the dictionary 'criteria'
@@ -34,27 +34,25 @@ def calculate_performance(model_output,K,evaluate=False):
     y = model_output["abundance"]
     
     "SSE"
-    criteria["SSE"] = SSE(x,y)
+    criteria["SSE"] = SSE(x,y) if len(variables)>0 else nan_values
     "AIC (corrected for small sample size"
     N = len(model_output)
-    _,criteria["AIC"] = AIC(criteria["SSE"],N,K)
-    criteria["K"] = K
-    criteria["N"] = N
+    K = len(variables)
+    _,criteria["AICc"] = AIC(criteria["SSE"],N,K) if len(variables)>0 else nan_values 
+
+    "Calculate Kappa, CCI, Sn, Sp and TSS (choose threshold value that maximises Kappa)"           
+    performance = performance_threshold(x,y,["Kappa","Sn","Sp","TSS","CCI"],evalution_criterion="TSS") if len(variables)>0 else nan_values
+    criteria["Kappa"] = performance["Kappa"] 
+    criteria["Sn"] = performance["Sn"] 
+    criteria["Sp"] = performance["Sp"] 
+    criteria["TSS"] = performance["TSS"]  
+    criteria["CCI"] = performance["CCI"]  
     
-    if evaluate==True:
-        
-        "Calculate Kappa, CCI, Sn, Sp and TSS (choose threshold value that maximises Kappa)"           
-        performance = performance_threshold(x,y,["Kappa","Sn","Sp","TSS","CCI"],evalution_criterion="TSS")
-        criteria["Kappa"] = performance["Kappa"] 
-        criteria["Sn"] = performance["Sn"] 
-        criteria["Sp"] = performance["Sp"] 
-        criteria["TSS"] = performance["TSS"]  
-        criteria["CCI"] = performance["CCI"]  
-        
-        "Calculate AUC"
-        from sklearn.metrics import roc_curve,auc
-        fpr, tpr, _ = roc_curve(y,x)
-        criteria["AUC"] = auc(fpr,tpr)
+    "Calculate AUC"
+    from sklearn.metrics import roc_curve,auc
+    fpr, tpr, _ = roc_curve(y,x)
+    
+    criteria["AUC"] = auc(fpr,tpr) if len(variables)>0 else nan_values
 
     return criteria 
     

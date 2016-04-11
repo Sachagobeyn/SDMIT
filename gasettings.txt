@@ -1,7 +1,7 @@
 nan_value	100000000000000
-objective_function AIC
+objective_function AICc
 ncpu	-1
-number_of_chromosomes 50
+number_of_chromosomes 100
 maximum_runs  100
 stop_criteria 30
-full_output True
+full_output False
