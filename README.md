@@ -9,7 +9,7 @@ Publication: This code is coupled to a publication, it is advised to first read 
 
 Usage: see script.py
 
-Requirements:
+Requirements (tested with):
   * Python 2.7.10
   
   * Numpy 1.9.2  
