@@ -43,6 +43,10 @@ from runtime import *
 
 def GA(model,model_inputs,boundaries,GA_options,res,full_output=False):
     
+    print("="*21)
+    print("Start GA optimisation")
+    print("="*21)
+    
     # create directory
     if os.path.exists(os.path.join(res,"calibration_results")):
         shutil.rmtree(os.path.join(res,"calibration_results"))    
@@ -50,9 +54,6 @@ def GA(model,model_inputs,boundaries,GA_options,res,full_output=False):
         shutil.rmtree(os.path.join(res,"model_runs"))    
     create_dir(res,["model_runs","calibration_results"])
     
-    f = open(os.path.join(res,"model_runs","cpu.txt"),"w") 
-    f.close()
-
     # extract model options
     n_chromosomes  = int(GA_options["number_of_chromosomes"]);
     selection_rate = GA_options["selection_rate"]
@@ -63,7 +64,6 @@ def GA(model,model_inputs,boundaries,GA_options,res,full_output=False):
     mode = GA_options["mode"]
     nan_value = GA_options["nan_value"]
     full_output = GA_options["full_output"]
-    print(full_output)
 
     if "ncpu"  in GA_options:
 	ncpu = int(GA_options["ncpu"])
@@ -88,7 +88,7 @@ def GA(model,model_inputs,boundaries,GA_options,res,full_output=False):
         
         # Step 1b: calculate performanc
         #t = time.time()
-        chromosomes = multithread(chromosomes,model,model_inputs,boundaries,objective_function,nan_value,os.path.join(res,"model_runs"),ncpu,full_output=full_output)
+        chromosomes,dt = multithread(chromosomes,model,model_inputs,boundaries,objective_function,nan_value,os.path.join(res,"model_runs"),ncpu,full_output=full_output)
         #print("One iteration ("+str(n_chromosomes)+"): ")
         #print(datetime.timedelta(seconds=(time.time()-t)))       
 
@@ -96,7 +96,9 @@ def GA(model,model_inputs,boundaries,GA_options,res,full_output=False):
         chromosomes,best = evaluate_chromosomes(chromosomes,best)
         
         # Step 2b: print chromosomes
-        print_chromosooms(chromosomes,os.path.join(res,"calibration_results"),run)   
+        if full_output==True:
+            
+            print_chromosooms(chromosomes,os.path.join(res,"calibration_results"),run)   
         
         # Step 3: natural selection (use elitism)
         chromosomes,n_keep = selection(chromosomes,selection_rate)
@@ -115,23 +117,23 @@ def GA(model,model_inputs,boundaries,GA_options,res,full_output=False):
         best_criteria.append(best.evaluation_criteria)
         
         ## print best to screen
-        print("Iteration ("+str(run)+"): best = "+str(best.evaluation_criteria))
+        print("Iteration ("+str(run)+"): best = "+str(best.evaluation_criteria) +"\t (runtime: "+str(dt)+" seconds)")
                 
         ## iterate and evaluate while condition
         run+=1
-        cond = False if run >= GA_options["maximum_runs"] else True
-        print(best_criteria)        
+        cond = False if run >= GA_options["maximum_runs"] else True    
         
         if (run>criteria):
 
             cond = False if np.sum(np.array(best_criteria[-(int(criteria)):])==best_criteria[-1])==criteria else True
-        
-        #t.iteration(run)
-        
-    #t.close()
-  
+
+    # Step 8: Final print result #
+    print_chromosooms(chromosomes,os.path.join(res,"calibration_results"),"results_ga")    
     
-    
+    print("="*19)
+    print("End GA optimisation")
+    print("="*19)
+       
     return best,chromosomes
     
 class Chromosoom():
@@ -499,11 +501,6 @@ def multithread(chromosomes,model,model_input,boundaries,objective_function,nan_
 
     # pool processors
     pool=multiprocessing.Pool(ncpu)
-
-    
-    f = open(os.path.join(res,"cpu.txt"),"a") 
-    f.write("Have to calculate "+str(nos)+" instances \n")
-    f.write("Starting pool with %s processes" %pool._processes+"\n")
     
     # make list of jobs
     jobs=[0.]*len(chromosomes)
@@ -519,11 +516,9 @@ def multithread(chromosomes,model,model_input,boundaries,objective_function,nan_
             chromosomes[i].setEvaluationcriteria(performance[objective_function])
     
     pool.join()
-    dt = t.close()
-    f.write("End pool, total runtime is of iteration is: "+str(dt)+"\n")
-    f.write("------\n")
-        
-    return chromosomes        
+    dt = t.close(print_value=False)
+
+    return chromosomes,dt   
 
 def create_dir(res,L):
     

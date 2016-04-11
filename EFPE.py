@@ -28,12 +28,10 @@ def EFPE(inputdata,model_settings,taxon,res):
                             columns: ["taxon","a1","a2","a3","a4","type"]
     """
     
-    "Take data for development"
-    sample = inputdata[inputdata["fold"]=="development"]
     "Take all presences into account"    
-    sample = sample[sample["abundance"]!=0]
+    inputdata = inputdata[inputdata["abundance"]!=0]
     "Estimate the parameters of the habitat preference curve"
-    parameters = curve_parameter_estimation(sample,model_settings,taxon)  
+    parameters = curve_parameter_estimation(inputdata,model_settings,taxon)  
     "Write"
     parameters.to_csv(os.path.join(res,"parameters_"+taxon+".csv"))
     

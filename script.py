@@ -196,7 +196,7 @@ def default_settings(filetype):
         ga_settings["selection_rate"] = 0.5
         ga_settings["crossover_rate"] = 0.8
         ga_settings["mutation_rate"] = 0.005
-        ga_settings["objective_function"] = "AICc"        
+        ga_settings["objective_function"] = "AIC"        
         
         "additional"
         ga_settings["maximum_runs"] = 100
@@ -205,6 +205,9 @@ def default_settings(filetype):
         ga_settings["mode"] = "binary"
         ga_settings["full_output"] = False
         ga_settings["nan_value"] = 100000
+        
+        "hill climbing"
+        ga_settings["neighbourhood"] = 0.05 
     
         return ga_settings
     
@@ -228,13 +231,12 @@ def read_file(setting_file,settings):
         line = re.split(r'[;,\s]\s*', line)
                    
         if line[0] in settings:
-            
             "Check type"
             "String/float"
             if isinstance(settings[line[0]],str):
                 settings[line[0]] = str(line[1])
-	    elif isinstance(settings[line[0]],bool):
-		settings[line[0]] = bool(line[1])
+            elif isinstance(settings[line[0]],bool):
+                settings[line[0]] = eval(line[1])
             else:
                 settings[line[0]] = float(line[1])
 
@@ -334,7 +336,7 @@ def optimisation(inputdata,parameters,taxon,variables,ga_settings,resmap):
     model_inputs = {}
     model_inputs["data"]= inputdata
     model_inputs["parameters"] = parameters
-    model_inputs["output"] = run_filter_model(model_inputs,taxon,variables,resmap)
+    model_inputs["output"] = run_filter_model(model_inputs,os.path.join(resmap,"SI_values.csv"))
     
     "Initiate boundary conditions for genetic algorithm"
     columns = ["parameter"]
@@ -345,10 +347,32 @@ def optimisation(inputdata,parameters,taxon,variables,ga_settings,resmap):
     boundaries["down"]=np.nan
     boundaries["up"]=np.nan    
 
-    from GA import GA
-    GA("interference",model_inputs,boundaries,ga_settings,resmap)
+    from GA import GA    
+    best,_ = GA("interference",model_inputs,boundaries,ga_settings,resmap)
     
-def run_filter_model(model_input,taxon,variables,resmap):  
+    "Prepare inputs to run model and run the filter model"
+    parameters = parameters[parameters["variable"].isin(best.parameters["parameter"][best.parameters["sample"]==1].tolist())]
+    
+    model_inputs = {}
+    model_inputs["data"]= inputdata
+    model_inputs["parameters"] = parameters[parameters["variable"].isin(best.parameters["parameter"][best.parameters["sample"]==1].tolist())]
+    
+    "Initiate boundary conditions for hill climbing"
+    columns = ["parameter"]
+    boundaries = pd.DataFrame(data=np.zeros([len(model_inputs["parameters"]["variable"].tolist() )*2,1]),columns=columns)
+    boundaries["parameter"] = [i+"_"+["a2","a3"][j] for i in model_inputs["parameters"]["variable"].tolist() for j in range(2)]
+    boundaries["sample"]=[model_inputs["parameters"][i.split("_")[1]][model_inputs["parameters"]["variable"]==i.split("_")[0]].values[0] for i in boundaries["parameter"].unique()]
+    boundaries["down_cond"]=[('boundaries["sample"][boundaries["parameter"]=="'+str(i.replace("a3","a2")) +'"].values[0]') if ("a3" in i) else (str(model_inputs["parameters"]["a1"][model_inputs["parameters"]["variable"]==i.split("_")[0]].values[0])) for i in boundaries["parameter"].unique()] 
+    boundaries["up_cond"]=[('boundaries["sample"][boundaries["parameter"]=="'+str(i.replace("a2","a3")) +'"].values[0]') if ("a2" in i) else (str(model_inputs["parameters"]["a4"][model_inputs["parameters"]["variable"]==i.split("_")[0]].values[0])) for i in boundaries["parameter"].unique()]
+    boundaries["range"] = [model_inputs["parameters"]["a4"][model_inputs["parameters"]["variable"]==i.split("_")[0]].values[0]-model_inputs["parameters"]["a1"][model_inputs["parameters"]["variable"]==i.split("_")[0]].values[0] for i in boundaries["parameter"].unique()] 
+    
+    "Optimise parameters of HPC"
+    from HC import HC
+    ga_settings["init_of"] = best.evaluation_criteria
+    
+    best = HC("evaluate_species_parameters",model_inputs,boundaries,ga_settings,resmap)
+
+def run_filter_model(model_input,res,interference=""):  
     """ 
     Function to run environmental filter model
     
@@ -372,42 +396,31 @@ def run_filter_model(model_input,taxon,variables,resmap):
     
     "Extract inputdata and habitat preference curve parameters"
     inputdata = model_input["data"]
-    inputdata = inputdata[inputdata["variable"].isin(variables)]  
-    inputdata = inputdata[inputdata["fold"]=="optimisation"]
     parameters = model_input["parameters"]
-    parameters = parameters[parameters["variable"].isin(variables)]
     
     "Run environmental model"
-    from environmental import Pixel
-    
-    ids = inputdata["ID"].unique().tolist();ind = 0
+    from environmental import EFM
     
     "Run the model over IDs"
-    for j in ids:
-        
-        # append to output
-        cond = (inputdata["ID"]==j)
-        test = inputdata[cond]   
-        
-        model = Pixel(0.,0.)
-        model.construct_model(test,parameters)
-        model.run_models()
-        out = model.get_model()
-        # delete nan
-        out = out[~out["HSI"].isnull()]
-        out["ID"] = j
-        out["taxon"] = taxon
-        if ind == 0:
-            output = deepcopy(out)
-        else:
-            output = output.append(out)
+    model = EFM(inputdata,parameters)
+    model.run_models()
     
-        ind +=1
+    if interference!="":
+
+        output = model.interference(interference)
+        "Link observed abundance to model output"
+        output = output.merge(inputdata[["ID","taxon","abundance"]],how="left",on=["ID","taxon"]).drop_duplicates()
+        "Evaluate model output on presence/absence"
+        output["abundance"][output["abundance"]!=0] = 1
+        "Calculate criteria"
+        output.to_csv(res)
+        from performance import calculate_performance
+        return calculate_performance(output,model_input["K"],False)      
         
-    " Write output "
-    output.to_csv(os.path.join(resmap,"SI_values.csv"))
-    
-    return output    
+    else:
+        
+        model.get_model().to_csv(res)
+        return model.get_model()
 
 def interference(model_input,boundaries,chromosoom,nan_value,res,full_output):
     
@@ -422,7 +435,7 @@ def interference(model_input,boundaries,chromosoom,nan_value,res,full_output):
     if len(variables)==0:
 
         criteria = {}
-        criteria = {c:nan_value for c in ["AUC","SSE","AICc","Kappa","CCI"]}
+        criteria = {c:nan_value for c in ["AUC","N","K","SSE","AIC","Kappa","CCI","K","Sp","Sn","TSS"]}
 
     else:
         
@@ -431,10 +444,12 @@ def interference(model_input,boundaries,chromosoom,nan_value,res,full_output):
     
         "Inteference"
         interference_formula = "lambda x:1-np.sqrt(np.sum((1-x)**2))/np.sqrt(float(len(x)))"
+        #interference_formula = "lambda x:np.prod(x)**(1./len(x))"
+        interference_formula = "np.mean"
         model_output = model_output.groupby(["ID","taxon"]).aggregate({"HSI":eval(interference_formula)}).reset_index()
     
         "Link observed abundance to model output"
-        model_output = model_output.merge(model_input[["ID","taxon","abundance"]][model_input["fold"]=="optimisation"],how="left",on=["ID","taxon"]).drop_duplicates()
+        model_output = model_output.merge(model_input[["ID","taxon","abundance"]],how="left",on=["ID","taxon"]).drop_duplicates()
         
         "Evaluate model output on presence/absence"
         model_output["abundance"][model_output["abundance"]!=0] = 1
@@ -443,10 +458,26 @@ def interference(model_input,boundaries,chromosoom,nan_value,res,full_output):
         if full_output==True:
             model_output.to_csv(os.path.join(res,str(chromosoom.ID)+"-sim.csv"))
         from performance import calculate_performance
-        criteria = calculate_performance(model_output,variables,nan_value)
+        criteria = calculate_performance(model_output,2.*len(variables),evaluate=True)
         
     return criteria
 
+def evaluate_species_parameters(model_input,neighbour,resmap):
+    
+    parameters = model_input["parameters"]
+    inputdata = model_input["data"]
+    
+    for i in neighbour.parameters["parameter"].tolist():
+        parameters[i.split("_")[1]][parameters["variable"]==i.split("_")[0]] = neighbour.parameters["sample"][neighbour.parameters["parameter"]==i].values[0]
+
+    # save parameters 
+    model_input = {}
+    model_input["data"] = inputdata
+    model_input["parameters"] = parameters
+    model_input["K"] = len(neighbour.parameters)
+    
+    return run_filter_model(model_input,os.path.join(resmap,str(neighbour.ID)+".csv"),interference="mean")
+    
 def create_dir(res,L):
     
     for i in range(len(L)):
@@ -465,6 +496,6 @@ if __name__ =="__main__":
     "Get settings defined in the model and ga setting file"
     model_settings = read_settingsfile(arguments["md_settings"],filetype="md")
     ga_settings = read_settingsfile(arguments["ga_settings"],filetype="ga")
-    ga_settings["full_output"] = False
+    
     "Run code"
     run(arguments["inputdata"],arguments["taxon"],arguments["variables"],arguments["resmap"],model_settings,ga_settings)

@@ -1,0 +1,8 @@
+nan_value	100000000000000
+objective_function AIC
+ncpu	-1
+number_of_chromosomes 50
+neighbourhood	0.05
+maximum_runs  100
+stop_criteria 100
+full_output False

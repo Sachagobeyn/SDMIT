@@ -40,13 +40,10 @@ class Runtime():
             # save current time in first record of self.time
             self.time[0] = time.time()
              
-    def close(self,print_value=True):
+    def close(self):
         
         dt=datetime.timedelta(seconds=time.time()-self.t0)
-
-	if print_value==True:
-
-        	print("End simulation, total runtime is "+str(dt))
+        print("End simulation, total runtime is "+str(dt))
         
-        return dt
+        return dt.total_seconds()
         
