@@ -449,7 +449,7 @@ def mutation_binary(init_parameters,n):
     # mutate
     parameters =init_parameters.copy()
     r = random.randrange(0,len(parameters))
-    parameters["sample"][r] = 1. if  parameters["sample"][r] == 0. else 1.
+    parameters["sample"][r] = 1. if  parameters["sample"][r] == 0. else 0.
 
     # make new chromosoomm and add to chromosomes
     mutated = Chromosoom(parameters)
