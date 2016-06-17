@@ -410,7 +410,33 @@ def run_filter_model(model_input,taxon,variables,resmap):
     
     return output    
 
-def interference(model_input,boundaries,chromosoom,nan_value,res,full_output):
+def interference(model_input,boundaries,chromosoom,nan_value,res,full_output):    
+
+    """ 
+    Function for interference suitability indices
+    
+    Arguments:
+        'model_input' (dictionary): 
+            'inputdata' (pandas df): Biological and environmental measurements
+                                columns: ["ID","taxon","abundance","variable","value",optional="development"]  
+            'parameters' (pandas df): Estimated parameters for habitat preference curves
+                                columns: ["taxon","a1","a2","a3","a4","type"]   
+        'boundaries' (pandas df): Dataframe with defined boundaries for optimisation problem
+        			colums: ["parameter","cond",sample","down","up"]
+        			"sample": 0/1 (not) included
+        			"parameter": parameter to optimise (in this case filter)
+        			"cond": condition applied to sample
+        			"down": lower boundary sample
+        			"up": upper boundary sample
+	'chromosoom' (object):  Chromosoom object (see GA.py)
+	'nan_value' (float): value for nan_values
+	'res' (str): name of map to write output
+	'full_output' (boolean): write full output (yes = 1/no = 0)
+    
+    Returns:
+        'criteria': dictionary with performance indices
+ 
+    """
     
     "Get model input and output"
     model_output = model_input["output"]
