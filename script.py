@@ -10,7 +10,8 @@ Description:
 INSTRUCTIONS
 ------------ 
 
-      Model is run by running 'script.py' in Python OR in command line 'python script.py -flags'
+      Model is run by running 'script.py' in Python OR in command line 'python script.py -flags' 
+      (for example "python script.py -inputdata 'inputdata.csv' -variables 'considered_variables.csv' -taxon 'Baetidae' -resmap 'Results'"
       Implemented for batch simulations
       The "parameterfile.txt"-file is read to the model and optimisation
       
@@ -45,7 +46,7 @@ INSTRUCTIONS
       
       value                    value of the variable
       
-      fold                     use data either for model development (developmen) or optimisation (optimisation)
+      fold                     use data either for model development (development) or optimisation (optimisation)
       
       -------------
       variables.csv
@@ -99,8 +100,8 @@ INSTRUCTIONS
       -taxon                     name of the taxon
     
       -resmap                    name of directory to write output
-      
-"""
+ 
+      """
 
 import pandas as pd
 pd.set_option('chained_assignment',None)
