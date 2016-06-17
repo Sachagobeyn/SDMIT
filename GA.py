@@ -63,7 +63,6 @@ def GA(model,model_inputs,boundaries,GA_options,res,full_output=False):
     mode = GA_options["mode"]
     nan_value = GA_options["nan_value"]
     full_output = GA_options["full_output"]
-    print(full_output)
 
     if "ncpu"  in GA_options:
 	ncpu = int(GA_options["ncpu"])
