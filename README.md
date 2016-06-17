@@ -24,6 +24,3 @@ Requirements (tested with):
   
 
 Support: Please feel free to open an issue in case of a problem.
-
-References:
- Haupt,R.L., Haupt, S.E., 2004, Algorithms Practical Genetic Algorithms. John Wiley & Sons, Inc., Hoboken, New Jersey, 2nd edition, 251 pp.
