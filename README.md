@@ -1,5 +1,5 @@
 
-Python scripts to develop and optimise a filter-based species distribution model
+Python scripts to develop and optimise a theory-based species distribution model
 
 © 2016, Sacha Gobeyn (sacha.gobeyn@ugent.be or sachagobeyn@gmail.com). 
 
