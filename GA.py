@@ -65,9 +65,9 @@ def GA(model,model_inputs,boundaries,GA_options,res,full_output=False):
     full_output = GA_options["full_output"]
 
     if "ncpu"  in GA_options:
-	ncpu = int(GA_options["ncpu"])
+        ncpu = int(GA_options["ncpu"])
     else:
-	ncpu = -1
+        ncpu = -1
  
     # initialize chromosomes and best
     n = 0
@@ -459,7 +459,7 @@ def mutation_binary(init_parameters,n):
 def print_chromosooms(chromosomes,res,run):
 
     # performance
-    perf_keys = chromosomes[0].performance.keys();
+    perf_keys = list(chromosomes[0].performance.keys());
     # columns    
     columns = list(chromosomes[0].parameters["parameter"]) + ["ID"] + perf_keys
     

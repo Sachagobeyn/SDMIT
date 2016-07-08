@@ -234,8 +234,8 @@ def read_file(setting_file,settings):
             "String/float"
             if isinstance(settings[line[0]],str):
                 settings[line[0]] = str(line[1])
-	    elif isinstance(settings[line[0]],bool):
-		settings[line[0]] = bool(line[1])
+            elif isinstance(settings[line[0]],bool):
+                settings[line[0]] = bool(line[1])
             else:
                 settings[line[0]] = float(line[1])
 
@@ -449,7 +449,7 @@ def interference(model_input,boundaries,chromosoom,nan_value,res,full_output):
     if len(variables)==0:
 
         criteria = {}
-        criteria = {c:nan_value for c in ["AUC","SSE","AICc","Kappa","CCI"]}
+        criteria = {c:nan_value for c in ["Sn","Sp","TSS","AUC","SSE","AICc","Kappa","CCI"]}
 
     else:
         
