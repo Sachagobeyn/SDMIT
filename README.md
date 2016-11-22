@@ -7,7 +7,7 @@ Details: Script can be run from a (I)python editor or command line. Designed for
  
 Publication: This code is coupled to a publication, it is advised to first read the publication.
 
-Usage: see script.py
+Usage: see SCRIPTS/script.py
 
 Requirements (tested with):
   * Python 2.7.10
