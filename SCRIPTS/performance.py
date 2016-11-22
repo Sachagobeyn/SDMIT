@@ -126,7 +126,7 @@ def Sn(x,y):
 # specificity (Sp): correclty classified as absent
 def Sp(x,y):
     
-    if float(sum(x+y==2) + sum(x-y == -1))!=0:
+    if float(sum(x+y==0) + sum(x-y == 1))!=0:
         
         return float(sum(x+y==0)) / float(sum(x+y==0) + sum(x-y == 1))  
 

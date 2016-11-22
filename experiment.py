@@ -10,8 +10,23 @@ import numpy as np
 import os
 import sys
 
-if __name__ =="__main__":
+def create_dir(res,L):
+    
+    for i in range(len(L)):
+        if not os.path.exists(os.path.join(res,L[i])):
+            os.makedirs(os.path.join(res,L[i]))     
 
-    taxon = "Baetidae"
-    run = "0"
-    os.system("python script.py -t "+taxon+" -res "+run)
+
+if __name__ =="__main__":
+    
+    res="full_run"
+    taxon = ["Baetidae","Caenidae","Chironomidae","Coenagrionidae","Corydalidae","Dytiscidae","Hydrophilidae","Hydroptilidae","Leptohyphidae","Libellulidae"]
+    
+    for i in taxon:
+        
+        taxon = "Chironomidae"
+        run = os.path.join(res,i)
+        create_dir("",[run])
+        os.system("python SCRIPTS/script.py -t "+taxon+" -res "+run)
+
+

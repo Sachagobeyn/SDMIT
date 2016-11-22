@@ -181,10 +181,10 @@ def default_settings(filetype):
     if filetype=="md":
         
         model_settings = {}
-        model_settings["a1"] = 5
+        model_settings["a1"] = 0
         model_settings["a2"] = 25 
         model_settings["a3"] = 75
-        model_settings["a4"] = 95
+        model_settings["a4"] = 100
     
         return model_settings
         
@@ -270,6 +270,7 @@ def overwrite_arguments(arguments):
     flags["t"] = "taxon"
     flags["res"] = "resmap"
     flags["v"] = "variables"
+    
     keys = flags.keys()
     
     for i in keys:
@@ -303,6 +304,8 @@ def run(inputdata,taxon,variables,resmap,model_settings,ga_settings):
     "Load and sample data (see XXX)"
     from data_processing import load_and_sample_data
     inputdata, variables = load_and_sample_data(inputdata,taxon,variables,resmap)
+    inputdata.to_csv(os.path.join(resmap,"inputdata.csv"))
+    #inputdata = pd.read_csv("inputdata.csv")
     
     "Environmental filter parameter estimation (EFPE)"
     from EFPE import EFPE
@@ -310,7 +313,8 @@ def run(inputdata,taxon,variables,resmap,model_settings,ga_settings):
 
     "Optimise model"
     optimisation(inputdata,model_parameters,taxon,variables,ga_settings,resmap)
-    
+    #gridcalibration(inputdata,model_parameters,taxon,variables,ga_settings,resmap)
+        
 def optimisation(inputdata,parameters,taxon,variables,ga_settings,resmap):
 
     """ 
@@ -335,7 +339,8 @@ def optimisation(inputdata,parameters,taxon,variables,ga_settings,resmap):
     model_inputs = {}
     model_inputs["data"]= inputdata
     model_inputs["parameters"] = parameters
-    model_inputs["output"] = run_filter_model(model_inputs,taxon,variables,resmap)
+    model_inputs["taxon"] = taxon
+    model_inputs["variables"] = variables
     
     "Initiate boundary conditions for genetic algorithm"
     columns = ["parameter"]
@@ -347,7 +352,93 @@ def optimisation(inputdata,parameters,taxon,variables,ga_settings,resmap):
     boundaries["up"]=np.nan    
 
     from GA import GA
-    GA("interference",model_inputs,boundaries,ga_settings,resmap)
+    GA("SDM",model_inputs,boundaries,ga_settings,resmap)
+
+def gridcalibration(inputdata,parameters,taxon,variables,ga_settings,resmap):
+
+    """ 
+    Function to run model and optimise the developed model.
+    
+    Arguments:
+        'inputdata' (pandas df): Biological and environmental measurements
+                            columns: ["ID","taxon","abundance","variable","value",optional="development"]  
+        'parameters' (pandas df): Estimated parameters for habitat preference curves
+                            columns: ["taxon","a1","a2","a3","a4","type"]        
+        'taxon' (str): name of taxon
+        'variables' (pandas df): Lists of considered variables
+                            columns: ["variable","consider"]
+        'ga_setting' (dictionary): settings for optimisation (with genetic algorithm)                            
+        'resmap' (str): name of map to write output
+    
+    Returns:
+
+    """
+  
+    "Prepare inputs to run model and run the filter model"
+    model_inputs = {}
+    model_inputs["data"]= inputdata
+    model_inputs["parameters"] = parameters
+    model_inputs["variables"] = variables
+    model_inputs["taxon"] = taxon
+    
+    "Initiate boundary conditions for genetic algorithm"
+    columns = ["parameter"]
+    boundaries = pd.DataFrame(data=np.zeros([len(variables),1]),columns=columns)
+    boundaries["parameter"]=variables
+    boundaries["cond"]=""
+    boundaries["sample"]=1.
+    boundaries["down"]=np.nan
+    boundaries["up"]=np.nan 
+ 
+    from itertools import product
+    import datetime
+    
+    "Create grid"
+    grid = list(product(range(2),repeat=len(boundaries)))
+    
+    "Open time"
+    f = open(os.path.join(resmap,"time-grid.txt"),"w")   
+    my_dt_ob = datetime.datetime.now()
+    time = [my_dt_ob.month, my_dt_ob.day, my_dt_ob.hour, my_dt_ob.minute, my_dt_ob.second]
+    f.write("%i,%i,%i,%i,%i\n"%(time[0],time[1],time[2],time[3],time[4]))
+    f.close()
+    
+    "Multiprocessing"
+    import multiprocessing
+    ncpu = ga_settings["ncpu"]
+        
+    # get number of processors
+    if ncpu==-1:
+        ncpu=multiprocessing.cpu_count()
+    pool=multiprocessing.Pool(ncpu)
+    jobs=[0.]*len(grid)
+    
+    for i in range(len(grid)):
+        jobs[i] = pool.apply_async(eval("gridpoint"),(grid[i],model_inputs,boundaries,ga_settings,resmap,i))  
+    pool.close()
+
+    for i in range(len(grid)):
+        p = jobs[i].get()
+    pool.join()
+
+    f = open(os.path.join(resmap,"time-grid.txt"),"a")    
+    my_dt_ob = datetime.datetime.now()
+    time = [my_dt_ob.year, my_dt_ob.month, my_dt_ob.day, my_dt_ob.hour, my_dt_ob.minute, my_dt_ob.second]
+    f.write("%i,%i,%i,%i,%i\n"%(time[0],time[1],time[2],time[3],time[4]))
+    f.close()
+    
+def gridpoint(point,model_inputs,boundaries,ga_settings,resmap,i) :
+
+    from GA import Chromosoom
+    import datetime
+
+    print(str(i)+":"+str(datetime.datetime.now()))
+
+    boundaries.loc[:,'sample'] = point
+    chromosoom_i = Chromosoom(boundaries)
+    interference(model_inputs,boundaries,chromosoom_i,ga_settings["nan_value"],resmap,False)
+            
+    return 1
     
 def run_filter_model(model_input,taxon,variables,resmap):  
     """ 
@@ -410,7 +501,7 @@ def run_filter_model(model_input,taxon,variables,resmap):
     
     return output    
 
-def interference(model_input,boundaries,chromosoom,nan_value,res,full_output):    
+def SDM(model_input,boundaries,chromosoom,nan_value,res,full_output):    
 
     """ 
     Function for interference suitability indices
@@ -438,12 +529,10 @@ def interference(model_input,boundaries,chromosoom,nan_value,res,full_output):
  
     """
     
-    "Get model input and output"
-    model_output = model_input["output"]
+    variables  = mapper(model_input,chromosoom)
+    model_output = run_filter_model(model_input,model_input["taxon"],variables,res)
     model_input = model_input["data"]
-    
-    variables = chromosoom.parameters["parameter"][chromosoom.parameters["sample"]==1].tolist()
- 
+
     "Check whether model has variables"
     "IF model has not variables: set evaluation criterion very high ELSE: run model"
     if len(variables)==0:
@@ -453,11 +542,9 @@ def interference(model_input,boundaries,chromosoom,nan_value,res,full_output):
 
     else:
         
-        "Consider filters in the candidate model"
-        model_output =  model_output[model_output["variable"].isin(variables)]
-    
         "Inteference"
-        interference_formula = "lambda x:1-np.sqrt(np.sum((1-x)**2))/np.sqrt(float(len(x)))"
+        #interference_formula = "lambda x:1-np.sqrt(np.sum((1-x)**2))/np.sqrt(float(len(x)))"
+        interference_formula = "lambda x: (np.prod(x))**(1./len(x))"
         model_output = model_output.groupby(["ID","taxon"]).aggregate({"HSI":eval(interference_formula)}).reset_index()
     
         "Link observed abundance to model output"
@@ -473,7 +560,14 @@ def interference(model_input,boundaries,chromosoom,nan_value,res,full_output):
         criteria = calculate_performance(model_output,variables,nan_value)
         
     return criteria
+    
+def mapper(model_input,chromosoom):
+    
+    "Translate chromosoom to variable inclusion"
+    variables = chromosoom.parameters["parameter"][chromosoom.parameters["sample"]==1].tolist()
 
+    return variables
+ 
 def create_dir(res,L):
     
     for i in range(len(L)):
@@ -484,7 +578,7 @@ if __name__ =="__main__":
     
     "Read parameterfile"
     #arguments = read_parameterfile(sys.argv[1])
-    arguments =  read_parameterfile("parameterfile.txt")
+    arguments =  read_parameterfile("../parameterfile.txt")
     
     "Overwrite with system parameters"
     arguments = overwrite_arguments(arguments)    

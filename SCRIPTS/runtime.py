@@ -16,7 +16,7 @@ class Runtime():
         # initialize percentages to evaluate 
         self.p = range(5,100+int(delta_percentage),int(delta_percentage))
         # initialize time matrix
-        self.time = [0.]*(n+1);
+        self.time = [0.]*(int(n)+1);
         # put in first timing
         self.time[0] = time.time();self.t0=time.time()
         # hold iterator for self.p

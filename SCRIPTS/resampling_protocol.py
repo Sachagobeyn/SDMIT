@@ -100,7 +100,7 @@ def spatial_sampler(IDs,sample,fields):
         
         "Sample each alternate point"
         r = range(i,len(sample),2)
-        IDs[IDs.keys()[i]] = IDs[IDs.keys()[i]]+sample["ID"].iloc[r].tolist()
+        IDs[list(IDs.keys())[i]] = IDs[list(IDs.keys())[i]]+sample["ID"].iloc[r].tolist()
 
     return IDs
     

@@ -40,6 +40,7 @@ import os
 import pandas as pd
 pd.set_option('chained_assignment',None)
 from runtime import *
+import datetime
 
 def GA(model,model_inputs,boundaries,GA_options,res,full_output=False):
     
@@ -51,6 +52,11 @@ def GA(model,model_inputs,boundaries,GA_options,res,full_output=False):
     create_dir(res,["model_runs","calibration_results"])
     
     f = open(os.path.join(res,"model_runs","cpu.txt"),"w") 
+    f.close()
+    
+    # write time in file per generation
+    f = open(os.path.join(res,"calibration_results","meta_results.txt"),"w")
+    f.write("generation,best,month,day,hour,minute,second\n")
     f.close()
 
     # extract model options
@@ -95,7 +101,8 @@ def GA(model,model_inputs,boundaries,GA_options,res,full_output=False):
         chromosomes,best = evaluate_chromosomes(chromosomes,best)
         
         # Step 2b: print chromosomes
-        print_chromosooms(chromosomes,os.path.join(res,"calibration_results"),run)   
+        if run+1==criteria:
+            print_chromosooms(chromosomes,os.path.join(res,"calibration_results"),run)   
         
         # Step 3: natural selection (use elitism)
         chromosomes,n_keep = selection(chromosomes,selection_rate)
@@ -114,7 +121,7 @@ def GA(model,model_inputs,boundaries,GA_options,res,full_output=False):
         best_criteria.append(best.evaluation_criteria)
         
         ## print best to screen
-        print("Iteration ("+str(run)+"): best = "+str(best.evaluation_criteria))
+        print("Iteration (%i): best = %.2f"%(run,best.evaluation_criteria))
                 
         ## iterate and evaluate while condition
         run+=1
@@ -124,7 +131,12 @@ def GA(model,model_inputs,boundaries,GA_options,res,full_output=False):
         if (run>criteria):
 
             cond = False if np.sum(np.array(best_criteria[-(int(criteria)):])==best_criteria[-1])==criteria else True
-        
+            
+        f = open(os.path.join(res,"calibration_results","meta_results.txt"),"a")
+        my_dt_ob = datetime.datetime.now()
+        time = [my_dt_ob.month, my_dt_ob.day, my_dt_ob.hour, my_dt_ob.minute, my_dt_ob.second]
+        f.write("%i,%.2f%i,%i,%i,%i,%i\n"%(run,best.evaluation_criteria,time[0],time[1],time[2],time[3],time[4]))
+        f.close()
         #t.iteration(run)
         
     #t.close()
@@ -166,6 +178,7 @@ def initialize_chromosomes(boundaries,n_chromosomes,mode,n):
         # binary GA (either 0 or 1)
         if mode == "binary":
             parameters = sample_parameters_binary(boundaries)
+
         chromosomes[i] = Chromosoom(parameters)
         chromosomes[i].setID(n);n+=1
 
@@ -496,28 +509,39 @@ def multithread(chromosomes,model,model_input,boundaries,objective_function,nan_
     if ncpu==-1:
         ncpu=multiprocessing.cpu_count()
 
-    # pool processors
-    pool=multiprocessing.Pool(ncpu)
+
 
     
     f = open(os.path.join(res,"cpu.txt"),"a") 
     f.write("Have to calculate "+str(nos)+" instances \n")
-    f.write("Starting pool with %s processes" %pool._processes+"\n")
+    f.write("Starting pool with %s processes" %ncpu+"\n")
     
-    # make list of jobs
-    jobs=[0.]*len(chromosomes)
-    for i in range(len(chromosomes)):
-        if np.isnan(chromosomes[i].evaluation_criteria):
-            jobs[i] = pool.apply_async(eval(model),(model_input,boundaries,chromosomes[i],nan_value,res,full_output))  
-    pool.close()
+    if ncpu!=1:
     
-    for i in range(len(chromosomes)):
-        if np.isnan(chromosomes[i].evaluation_criteria):  
-            performance = jobs[i].get()
-            chromosomes[i].setPerformance(performance)
-            chromosomes[i].setEvaluationcriteria(performance[objective_function])
-    
-    pool.join()
+        # pool processors
+        pool=multiprocessing.Pool(ncpu)
+        # make list of jobs
+        jobs=[0.]*len(chromosomes)
+        for i in range(len(chromosomes)):
+            if np.isnan(chromosomes[i].evaluation_criteria):
+                jobs[i] = pool.apply_async(eval(model),(model_input,boundaries,chromosomes[i],nan_value,res,full_output))  
+        pool.close()
+        
+        for i in range(len(chromosomes)):
+            if np.isnan(chromosomes[i].evaluation_criteria):  
+                performance = jobs[i].get()
+                chromosomes[i].setPerformance(performance)
+                chromosomes[i].setEvaluationcriteria(performance[objective_function])
+        pool.join()
+  
+    else:
+        
+        for i in range(len(chromosomes)):
+             if np.isnan(chromosomes[i].evaluation_criteria):
+                 performance= eval(model+"(model_input,boundaries,chromosomes[i],nan_value,res,full_output)")
+                 chromosomes[i].setPerformance(performance)
+                 chromosomes[i].setEvaluationcriteria(performance[objective_function])
+                         
     dt = t.close()
     f.write("End pool, total runtime is of iteration is: "+str(dt)+"\n")
     f.write("------\n")

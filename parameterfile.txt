@@ -1,6 +1,6 @@
-inputdata	inputdata.csv
+inputdata	../DATA/inputdata.csv
 taxon		Baetidae
-variables	considered_variables.csv
+variables	../considered_variables.csv
 resmap		Results
-ga_settings	gasettings.txt
-md_settings	modelsettings.txt
+ga_settings	../gasettings.txt
+md_settings	../modelsettings.txt
