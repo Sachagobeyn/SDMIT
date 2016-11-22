@@ -1,5 +1,5 @@
 
-Python scripts to develop and perform input variable selection for a conceptually-based species distribution model
+Python scripts to develop and perform model identification (for now only input variable selection) for a conceptually-based species distribution model
 
 © 2016, Sacha Gobeyn (sacha.gobeyn@ugent.be or sachagobeyn@gmail.com). 
 
