@@ -19,9 +19,7 @@ Requirements (tested with):
   * Sklearn 0.16.1
 
   
-  (tested on Python 2.7.10 with Anaconda 2.3.0 (64-bit)) 
-  (Anaconda: free Python distribution package: https://www.continuum.io/downloads)
-  
+  (tested on Python 2.7.10 with [Anaconda 2.3.0 (64-bit)](https://www.continuum.io/downloads "Anaconda") 
 
 Support: Please feel free to open an issue in case of a problem.
 
