@@ -24,3 +24,5 @@ Requirements (tested with):
   
 
 Support: Please feel free to open an issue in case of a problem.
+
+Licensed under [ CC BY 4.0 Creative Commons](https://creativecommons.org/licenses/by/4.0/ "CC")
