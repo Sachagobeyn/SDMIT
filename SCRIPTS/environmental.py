@@ -8,35 +8,6 @@ import pandas as pd
 import numpy as np
 import sys
 
-def environmental_filter_model(X,Y,initial,env_input,species_parameters,model_parameters):
-
-    #initial = initial*mask if mask!=None else initial
-    
-    " Initialize output "
-    output = np.array(initial.copy(),dtype=float)
-    
-    " Points "
-    points = np.unique(env_input["ID"])
-    
-    for i in range(0,len(points)):
-        
-        " initiate calculation point "
-        pixel = Pixel(env_input["X"][env_input["ID"]==points[i]],env_input["Y"][env_input["ID"]==points[i]])
-        
-        " contruct models "
-        pixel.construct_model(env_input,species_parameters["environmental_parameters"])
-
-        " calculate model according to shape"
-        pixel.run_model()
-        
-        " interference "
-        pixel.interference(model_parameters["interference"],threshold=0.5)
-        
-        " project on raster "
-        output = pixel.project_to_raster(output,X,Y)
-        
-    return output
-
 def mahalanobis_distance(x,y,normalise = 1.):
     
     d  = np.array(x-y)
@@ -66,20 +37,17 @@ def euclidean_distance(x,y,normalise = 1.0):
         HSI = distance
     return HSI
       
-class Pixel():
+class EFM():
     
-    def __init__(self,X=0.,Y=0.):
-        
-        # we should really fix these lines of code
-        try:
-            self.X = X.tolist()[0]
-            self.Y = Y.tolist()[0]
-        except:
-            self.X = X
-            self.Y = Y
-                        
-        self.HSI = np.nan
-        
+    def __init__(self,env_input,model_parameters,logit=False):
+
+        self.model = env_input[["sample","ID","X","Y","date","taxon","variable","value"]].merge(model_parameters[["variable","a1","a2","a3","a4","type"]],on="variable",how="inner")
+        # number of variables
+        number_of_variables = len(self.model["variable"].unique())
+        self.nos = number_of_variables
+        self.model["value"] = self.model["value"].astype(float)
+        self.flogit = logit
+
     def save_model(self,resname,mode="w"):
         
         if mode=="w":
@@ -90,31 +58,28 @@ class Pixel():
     def get_model(self):
         
         return self.model
-        
-    def construct_model(self,env_input,model_parameters):
-        
-        self.model = env_input[["variable","value"]].merge(model_parameters[["variable","a1","a2","a3","a4","type"]],on="variable",how="right")
-        # number of variables
-        number_of_variables = len(self.model["variable"].unique())
-        self.nos = number_of_variables
-        
-        return self.model
-        
+
     def run_models(self):
         
         un_types = self.model["type"].unique().tolist()
         self.model["HSI"]=np.nan
 
-        for i in un_types:
+        if self.flogit==False:
             
-            cond = self.model["type"]==i
-
-            if i == "acute":
-                self.acute(cond)
-            if i == "right":
-                self.right(cond)
-            if i == "line":
-                self.line(cond)
+            for i in un_types:
+                
+                cond = self.model["type"]==i
+    
+                if i == "continuous":
+                    self.acute(cond)
+#                if i == "right":
+#                    self.right(cond)
+#                if i == "line":
+#                    self.line(cond)
+        else:
+            self.logit()
+            
+        self.model = self.model[~self.model["HSI"].isnull()]
         
         return self.model
         
@@ -122,9 +87,9 @@ class Pixel():
         
         # negative skewed model      
         cond = (self.model["value"]<=self.model["a1"]) & condition
-        self.model["HSI"][cond] = 1
+        self.model.loc[cond,"HSI"] = 1
         cond = (self.model["value"]>self.model["a1"]) & condition
-        self.model["HSI"][cond] = 0
+        self.model.loc[cond,"HSI"] = 0
         
         # positive skewed model           
 #        cond = (self.model["value"]<self.model["a1"]) & condition
@@ -137,13 +102,13 @@ class Pixel():
         # 1. negative skewed model      cute.right
         # 1.1. optimal
         cond = (self.model["value"]<=self.model["a1"]) & condition
-        self.model["HSI"][cond] = 1
+        self.model.loc[cond,"HSI"] = 1
         # 1.2. sub-optimal
         cond = (self.model["a1"]<self.model["value"]) & (self.model["value"]<self.model["a2"]) & condition
-        self.model["HSI"][cond] = (self.model["a2"][cond] - self.model["value"][cond])/(self.model["a2"][cond]-self.model["a1"][cond]) 
+        self.model.loc[cond,"HSI"] = (self.model["a2"][cond] - self.model["value"][cond])/(self.model["a2"][cond]-self.model["a1"][cond]) 
         # 1.3. non-optimal
         cond = (self.model["value"]>self.model["a2"]) & condition 
-        self.model["HSI"][cond] = 0
+        self.model.loc[cond,"HSI"] = 0
 #        
 #        # 2. positive skewed model           
 #        cond_model = (model["side"]==1)
@@ -164,33 +129,66 @@ class Pixel():
         
         # rule 1: HSI(Value<a1)
         cond = (self.model["value"]<self.model["a1"]) & condition
-        self.model["HSI"][cond] = 0.
+        self.model.loc[cond,"HSI"] = 0.
         
         # rule 2: HSI(a1<=Value & Value<a2)    
         cond=(self.model["a1"]<=self.model["value"]) & (self.model["value"]<self.model["a2"]) & condition
-        self.model["HSI"][cond] = (self.model["value"][cond]-self.model["a1"][cond])/(self.model["a2"][cond]-self.model["a1"][cond])
+        self.model.loc[cond,"HSI"] = (self.model["value"][cond]-self.model["a1"][cond])/(self.model["a2"][cond]-self.model["a1"][cond])
         
         # rule 2 exception: HSI(a1=a2=Value)
         cond=(self.model["a1"]==self.model["value"]) & (self.model["value"]==self.model["a2"]) & condition
-        self.model["HSI"][cond] = 1.   
+        self.model.loc[cond,"HSI"] = 1.   
         
         # rule 3: HSI(a2<=value & a3<=value)
         cond=(self.model["a2"]<=self.model["value"]) & (self.model["value"]<=self.model["a3"]) & condition
-        self.model["HSI"][cond] = 1.
+        self.model.loc[cond,"HSI"] = 1.
         
         # rule 4: HSI(a3<value & a4<=value)
         cond=(self.model["a3"]<self.model["value"]) & (self.model["value"]<=self.model["a4"]) & condition
-        self.model["HSI"][cond]=(self.model["a4"][cond]-self.model["value"][cond])/(self.model["a4"][cond]-self.model["a3"][cond])  
+        self.model.loc[cond,"HSI"]=(self.model["a4"][cond]-self.model["value"][cond])/(self.model["a4"][cond]-self.model["a3"][cond])  
         
         # rule 4 exception: HSI(a3=a4=Value)
         cond=(self.model["value"]==self.model["a3"]) & (self.model["value"]==self.model["a4"]) & condition
-        self.model["HSI"][cond]=1.
+        self.model.loc[cond,"HSI"]=1.
         
         # rule 5: HSI(a4<Value)
         cond=(self.model["value"]>self.model["a4"]) & condition
-        self.model["HSI"][cond]=0.
+        self.model.loc[cond,"HSI"]=0.
 
-    def interference(self,mode,cov=pd.DataFrame(),threshold=np.nan):
+    def logit(self,e=10**-3):
+        
+        try:
+            self.model["beta1"] = np.log((2-e)/e)/(self.model["a2"]-self.model["a1"]+10**-6)
+            self.model["alpha1"] = -self.model["beta1"]*self.model["a2"]
+            self.model["beta2"] = np.log((2-e)/e)/(self.model["a3"]-self.model["a4"]+10**-6)
+            self.model["alpha2"] = -self.model["beta2"]*self.model["a3"]        
+        except:
+            print(self.model)
+            
+        # initiate with HSI == np.nan
+        self.model["HSI"]=np.nan
+        
+        # rule 1: HSI(Value<a1)
+        cond = (self.model["value"]<self.model["a1"])
+        self.model.loc[cond,"HSI"] = 0.
+        
+        # rule 2: HSI(a1<=Value & Value<a2)    (logit)
+        cond=(self.model["a1"]<=self.model["value"]) & (self.model["value"]<self.model["a2"])
+        self.model.loc[cond,"HSI"] = 2/(1+np.exp(-(self.model["beta1"][cond]*self.model["value"][cond]+self.model["alpha1"][cond])))
+        
+        # rule 3: HSI(a2<=value & a3<=value)
+        cond=(self.model["a2"]<=self.model["value"]) & (self.model["value"]<=self.model["a3"])
+        self.model.loc[cond,"HSI"] = 1.
+        
+        # rule 4: HSI(a3<value & a4<=value)
+        cond=(self.model["a3"]<self.model["value"]) & (self.model["value"]<=self.model["a4"])
+        self.model.loc[cond,"HSI"] = 2/(1+np.exp(-(self.model["beta2"][cond]*self.model["value"][cond]+self.model["alpha2"][cond])))
+        
+        # rule 5: HSI(a4<Value)
+        cond=(self.model["value"]>self.model["a4"])
+        self.model.loc[cond,"HSI"] = 0.
+        
+    def interference(self,mode):
         """interference
     
         Keyword arguments:
@@ -204,47 +202,27 @@ class Pixel():
             
             if mode == "minimum":
                 
-                self.HSI = float(np.min(self.model["HSI"]))
+                print("implement")
                 
             if mode == "product":
                 
-                self.HSI = float(np.product(np.array(self.model["HSI"][~self.model["HSI"].isnull()])))
+                print("implement")
                 
             if mode == "mean":
                 
-                self.HSI = float(np.mean(np.array(self.model["HSI"])))
+                return self.model.groupby(["sample","X","Y","date","taxon"]).aggregate({"HSI":np.mean}).reset_index()
                 
-            if mode == "squared product":
+            if mode == "squaredproduct":
 
-                self.HSI = (float(np.prod(np.array(self.model["HSI"]))))**(1./self.nos)
-            
-            if mode == "mahalanobis":
-            
-                if cov.empty:
-                    message = "Please provide a covariance matrix"
-                    sys.exit(message)
-                else:
-                    # prepare
-                    var = self.model["variable"].unique().tolist()                    
-                    cov = cov.reset_index()
-                    self.model = self.model.merge(cov,on="variable",how="left")
-                    self.HSI = mahalanobis_distance(self.model["HSI"],np.ones(len(var)))
+                return self.model.groupby(["sample","X","Y","date","taxon"]).aggregate({"HSI":lambda x:(np.nanprod(x))**(1./len(x))}).reset_index()
 
             if mode == "euclidean":
                     
-                    var = self.model["variable"].unique().tolist() 
-                    # if one of the variables, out of range, not present
-                    if float(np.min(self.model["HSI"]))==0.:
-                        self.HSI = 0.
-                    else:
-                        self.HSI = euclidean_distance(self.model["HSI"],np.ones(len(var)))
+                return self.model.groupby(["sample","X","Y","date","taxon"]).aggregate({"HSI":lambda x: 1-np.sqrt(np.sum((1.-x)**2))/np.sqrt(len(x))}).reset_index()
                    
         else:
             
-            self.HSI = np.nan
-            
-        return self.HSI
-    
+            return np.nan
              
     def threshold(self,threshold):
         

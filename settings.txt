@@ -1,0 +1,16 @@
+nan_value	100000000000000
+multi_objective False
+objective_function TSS
+ncpu	1
+number_of_chromosomes 50
+maximum_runs 200	
+stop_criteria 200
+mutation_rate 0.10
+crossover_rate 1.0
+selection_rate 0.5
+duplicates True
+mode variable
+logit True
+interference squaredproduct
+
+

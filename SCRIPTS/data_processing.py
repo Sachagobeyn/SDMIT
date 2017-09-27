@@ -4,11 +4,11 @@ Created on Fri Oct  9 10:52:36 2015
 Description:  
 @author: sacha gobeyn (sacha.gobeyn@ugent.be or sachagobeyn@gmail.com)
 """
-
 import pandas as pd
-pd.set_option('chained_assignment',None)
+import numpy as np
+import sys
 
-def load_and_sample_data(inputdata,taxon,variables,res):
+def load_and_preproces_data(inputdata,taxon,filter_parameters,variables,res,nan_value):
     """ 
     Load data and variables list and sample the data
     
@@ -28,22 +28,25 @@ def load_and_sample_data(inputdata,taxon,variables,res):
                             columns: ["variable","consider"]                            
     """
     "Load inputdata"
-    [inputdata,variables] = load_data([inputdata,variables])
-    variables = variables["variable"][variables["consider"]==1].unique().tolist()
-        
+    [inputdata,variables,filter_parameters] = load_data([inputdata,variables,filter_parameters])
+    variables = variables["name_sim"][variables["consider"]==1].unique().tolist()
+    
+    "Fix nan in inputdata"
+    inputdata = fix_nan(inputdata,nan_value)
+    
     "Extract data for considered taxon and variables"
     inputdata = extract(inputdata,variables,taxon)
+    from resample import resample_data
+    " In earlier versions of code, automatic resampling option was available"
+    " However, now resampling should be done outside SDMIT"
+    resample = "False"
+    inputdata = resample_data(inputdata,resample)
+
+    "Extract parameters for considered variables"
+    filter_parameters = filter_parameters[filter_parameters["variable"].isin(variables)]
     
-    "Split data (if no development tag is defined in the inputdata)"
-    if "fold" not in inputdata:
-        
-        from resampling_protocol import resampling_protocol
-        return resampling_protocol(inputdata,["type","EQRclass"],res,full_output=True),variables
-    
-    else:
-        
-        return inputdata,variables
-    
+    return inputdata,filter_parameters,variables
+
 def load_data(files):
     """ 
     Load multiple ".csv" files in pandas dataframes
@@ -61,7 +64,7 @@ def load_data(files):
     
     for i in range(len(files)):
         
-        data[i] = pd.read_csv(files[i])
+        data[i] = pd.read_csv(files[i],encoding = "ISO-8859-1")
         
     return data
 
@@ -89,8 +92,45 @@ def extract(inputdata,variables,taxon):
     inputdata = inputdata[inputdata["taxon"]==taxon]
     "Remove NaN values"
     inputdata = inputdata[~inputdata["value"].isnull()]
-    inputdata["value"] = inputdata["value"].astype(float)
+    #inputdata["value"] = inputdata["value"].astype(float)
     
       
     return inputdata
-    
+
+def fix_nan(inputdata,nan_value):
+
+    col = ["date","X","Y"]
+
+    for i in col:
+        
+        if np.sum(inputdata[i].isnull())>0:
+        
+            inputdata.loc[:,i] = inputdata.loc[:,i].fillna(-nan_value)
+       
+    return inputdata
+#
+#def prepare_dynamic_grid(filter_parameters,inputdata,runs):
+#    
+#    un_var = filter_parameters["variable"].unique()
+#    
+#    filter_parameters["lower_b"] = 0.
+#    filter_parameters["upper_b"] = 0.
+#    for i in un_var:
+#
+#        b2 = filter_parameters.loc[filter_parameters["variable"]==i,"b2"].values[0]
+#        data_i = inputdata["value"][(inputdata["variable"]==i)]
+#        filter_parameters.loc[filter_parameters["variable"]==i,"lower_b"] = Grid([np.percentile(data_i[inputdata["value"]>b2],i) for i in np.arange(0,runs,1)])
+#        filter_parameters.loc[filter_parameters["variable"]==i,"upper_b"] = Grid([np.percentile(data_i[inputdata["value"]<b2],i) for i in np.arange(0,runs,1)])
+#    
+#    return filter_parameters
+#    
+#class Grid():
+#    
+#    def __init__(self,values):
+#        
+#        self.values = values
+#    
+#    def sample(self,n):
+#        
+#        return self.values[n]
+#        
