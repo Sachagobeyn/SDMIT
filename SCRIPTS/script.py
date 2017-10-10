@@ -876,7 +876,7 @@ if __name__ =="__main__":
     print("="*19)    
     print(" CC BY 4.0 Creative Commons, sacha gobeyn, \n"+
           " sacha.gobeyn at ugent.be OR sachagobeyn at gmail.com")
-    print(" https://github.com/Sachagobeyn/SDMIT \n")
+    print(" https://github.com/Sachagobeyn/SDMIT \n https://github.com/Sachagobeyn/SDMIT/releases/tag/v2.0.0")
     print(" Reading parameterfile and code settings")
        
     "Read parameterfile"

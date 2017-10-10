@@ -127,7 +127,7 @@ def GA(model,model_inputs,boundaries,options,res,full_output=False):
             # Step 7: Dynamically adapt boundaries for optimisation (losen boundaries)
             "Only for parameter estimation"
             if mode!="binary":
-                population.adjustBoundaries(criteria,mode,population.best,run,nan_value)
+                population.adjustBoundaries(criteria,mode,population.best,run,os.path.join(res,"boundaries"),nan_value)
             
             # Step 8: Print population and print message for generation
             if cond==True:
@@ -175,11 +175,11 @@ def load_hyper_parameters(options):
 def set_environment_EA(options,res):
  
     " create directory "
-    if os.path.exists(os.path.join(res,"optimisation_summary")):
-        shutil.rmtree(os.path.join(res,"optimisation_summary"))    
-    if os.path.exists(os.path.join(res,"model_runs")):
-        shutil.rmtree(os.path.join(res,"model_runs"))    
-    create_dir(res,["model_runs","optimisation_summary"])
+    l = ["optimisation_summary","model_runs","boundaries"]
+    for i in l:
+        if os.path.exists(os.path.join(res,i)):
+            shutil.rmtree(os.path.join(res,i))    
+    create_dir(res,l)
     
     " Type of problem"
     mode = options["mode"]
@@ -233,26 +233,32 @@ class Population():
         self.boundaries = boundaries
         self.objective_function = objective_function
        
-    def adjustBoundaries(self,criteria,mode,best,run,nan_value):
+    def adjustBoundaries(self,criteria,mode,best,run,resmap,nan_value):
 
         for i in self.chromosomes:
         
             if mode=="continuous":
             
-                if i.fitness==best:
+                if i.fitness==best.fitness:
                     
-                    i.mapParameters(nan_value)
+                    i.mapParameters(np.nan)
                     # only for boundaries of continuous variables
                     cond = self.boundaries["type"]=="continuous"
                     if np.sum(cond)>0:
                         parameters_i = i.parameters[cond]
                         boundaries = self.boundaries[cond]
-                        # extent b3                
-                        cond_b3 = (parameters_i["a4"]>boundaries["b4"].astype(float)) & (~np.isnan(parameters_i["a4"]))
-                        boundaries["b4"][cond_b3] = parameters_i["a4"][cond_b3]
-                        # extent b0
-                        cond_b0 = (parameters_i["a1"]<boundaries["b1"].astype(float)) & (~np.isnan(parameters_i["a1"]))
-                        boundaries["b1"][cond_b0] = parameters_i["a1"][cond_b0]
+                        # extent b4   
+                        cond_b4 = (parameters_i["a4"]>boundaries["b4"].astype(float)) & (~np.isnan(parameters_i["a4"]))
+                        boundaries.loc[cond_b4,"b4"] = parameters_i["a4"][cond_b4].values
+                        # extent b3
+                        cond_b3 = (parameters_i["a3"]<boundaries["b3"].astype(float)) & (~np.isnan(parameters_i["a3"]))
+                        boundaries.loc[cond_b3,"b3"] = parameters_i["a3"][cond_b3].values
+                        # extent b3
+                        cond_b2 = (parameters_i["a2"]>boundaries["b2"].astype(float)) & (~np.isnan(parameters_i["a2"]))
+                        boundaries.loc[cond_b2,"b2"] = parameters_i["a2"][cond_b2].values                        
+                        # extent b1
+                        cond_b1 = (parameters_i["a1"]<boundaries["b1"].astype(float)) & (~np.isnan(parameters_i["a1"]))
+                        boundaries.loc[cond_b1,"b1"] = parameters_i["a1"][cond_b1].values
                         
                         self.boundaries[cond] = boundaries                  
             
@@ -260,21 +266,22 @@ class Population():
             
                 if i.rank==1:
                     
-                    i.mapParameters(nan_value)
+                    i.mapParameters(np.nan)
                     # only for boundaries of continuous variables
                     cond = self.boundaries["type"]=="continuous"
                     if np.sum(cond)>0:
                         parameters_i = i.parameters[cond]
                         boundaries = self.boundaries[cond]
                         # extent b3                
-                        cond_b3 = (parameters_i["a4"]>boundaries["b4"].astype(float)) & (~np.isnan(parameters_i["a4"]))
-                        boundaries["b4"][cond_b3] = parameters_i["a4"][cond_b3]
+                        cond_b4 = (parameters_i["a4"]>boundaries["b4"].astype(float)) & (~np.isnan(parameters_i["a4"]))
+                        boundaries.loc[cond_b4,"b4"] = parameters_i["a4"][cond_b4].values
                         # extent b0
-                        cond_b0 = (parameters_i["a1"]<boundaries["b1"].astype(float)) & (~np.isnan(parameters_i["a1"]))
-                        boundaries["b1"][cond_b0] = parameters_i["a1"][cond_b0]
+                        cond_b1 = (parameters_i["a1"]<boundaries["b1"].astype(float)) & (~np.isnan(parameters_i["a1"]))
+                        boundaries.loc[cond_b1,"b1"] = parameters_i["a1"][cond_b1].values
                         
-                        self.boundaries[cond] = boundaries
-                    
+                        self.boundaries[cond] = boundaries    
+        
+        self.boundaries.to_csv(os.path.join(resmap,"boundaries_"+str(run)+".csv"))
         
     def remove_duplicates(self,attribute):
         
@@ -449,8 +456,30 @@ class Population():
 
          return performance,solution
         
-    def printPopulation(self,res,run,mode,multi_objective):
+    def printPopulation(self,res,run,mode,multi_objective,initiate=False):
 
+        "print to seperate file"
+        dataframe,parameters = self.transformToOutput(mode,multi_objective)
+        #pd.DataFrame(data=data,columns=columns).to_csv(os.path.join(res,str(run)+".csv"))
+        dataframe.to_csv(os.path.join(res,str(run)+".csv"))
+        
+        "initiate/append history of algorithm"
+        dataframe.loc[:,"generation"] = run
+        parameters.loc[:,"generation"] = run
+        
+        if initiate==True:
+            
+            dataframe.to_csv(os.path.join(res,"results_iterations.csv"))
+            parameters.to_csv(os.path.join(res,"model_parameters.csv"))
+            
+        else:
+        
+            dataframe.to_csv(os.path.join(res,"results_iterations.csv"),mode='a',header=False)
+            parameters.to_csv(os.path.join(res,"model_parameters.csv"),mode='a',header=False)
+           
+    def transformToOutput(self,mode,multi_objective):
+         
+        
         un_var = self.chromosomes[0].parameters["variable"].unique()
         un_var.sort()
         
@@ -472,11 +501,12 @@ class Population():
             data[i,-(1+len(perf_keys)):-1]  = np.array([self.chromosomes[i].performance[perf_keys[j]] for j in range(len(perf_keys))])
             if multi_objective==True:
                 data[i,-1] = self.chromosomes[i].rank
-        dataframe = pd.DataFrame(data=data,columns=columns)
-        #pd.DataFrame(data=data,columns=columns).to_csv(os.path.join(res,str(run)+".csv"))
-        dataframe.to_csv(os.path.join(res,str(run)+".csv"))
+
+        # get best solution
+        self.best.mapParameters(np.nan)
         
-                
+        return pd.DataFrame(data=data,columns=columns),self.best.parameters
+    
 class chromosome():
     
     def __init__(self,parameters):
@@ -530,7 +560,7 @@ class chromosome():
  
     def mapParameters(self,nan_value):
         
-        index = self.parameters
+        index = self.parameters.index
 
         for i in index:
             
@@ -636,7 +666,7 @@ class chromosome():
                 
                 if (np.random.uniform()<mutation_rate):
                                     
-                    self.parameters.loc[i,"sample"] = substring(self.parameters.loc[i,["b1","b2","b3","b4"]],self.parameters.loc[i,"low"],self.parameters.loc[i,"high"],4,self.parameters.loc[i,"type"],initiate=True)
+                    self.parameters.loc[i,"sample"] = substring(self.parameters.loc[i,["b1","b2","b3","b4"]],self.parameters.loc[i,"b1"],self.parameters.loc[i,"b4"],4,self.parameters.loc[i,"type"],initiate=True)
 
 
         self.fitness = np.nan
@@ -812,7 +842,7 @@ class substring():
             
             if np.random.uniform()<chance:
                 #print("low:%.2f,a2:%.2f,a3:%.2f,high:%.2f"%((self.low,self.parameters[0],self.parameters[1],self.high)))               
-                self.parameters[0] = np.random.uniform(self.low,self.parameters[1])
+                self.parameters[0] = np.random.uniform(self.low*0.5 if self.low>0 else self.low*1.5,self.parameters[1])
                 #print("low:%.2f,a2:%.2f,a3:%.2f,high:%.2f"%((self.low,self.parameters[0],self.parameters[1],self.high)))               
             if np.random.uniform()<chance:
                 #print("low:%.2f,a2:%.2f,a3:%.2f,high:%.2f"%((self.low,self.parameters[0],self.parameters[1],self.high)))               
@@ -824,7 +854,7 @@ class substring():
                 #print("low:%.2f,a2:%.2f,a3:%.2f,high:%.2f"%((self.low,self.parameters[0],self.parameters[1],self.high)))  
             if np.random.uniform()<chance:
                 #print("low:%.2f,a2:%.2f,a3:%.2f,high:%.2f"%((self.low,self.parameters[0],self.parameters[1],self.high)))               
-                self.parameters[3] = np.random.uniform(self.parameters[2],self.high)
+                self.parameters[3] = np.random.uniform(self.parameters[2],self.high*1.5 if self.high>0 else self.high*0.5)
                 #print("low:%.2f,a2:%.2f,a3:%.2f,high:%.2f"%((self.low,self.parameters[0],self.parameters[1],self.high)))                  
         else:
             
@@ -924,7 +954,7 @@ def initialize_population(model,model_inputs,boundaries,objective_function,n_chr
     # print first batch
     run = 0 
     print_message(population,run,dt,multi_objective,res)
-    population.printPopulation(os.path.join(res,"optimisation_summary"),run,mode,multi_objective)
+    population.printPopulation(os.path.join(res,"optimisation_summary"),run,mode,multi_objective,initiate=True)
     
     return population,run,ID
 
@@ -967,7 +997,7 @@ def sample_parameters_variable(boundaries,nan_value):
     
         if parameters.loc[i,"sample"]==1:
             
-            parameters.loc[i,"sample"] = substring(parameters.loc[i,["b1","b2","b3","b4"]],parameters.loc[i,"low"],parameters.loc[i,"high"],4,parameters.loc[i,"type"],initiate=True)
+            parameters.loc[i,"sample"] = substring(parameters.loc[i,["b1","b2","b3","b4"]],parameters.loc[i,"b1"],parameters.loc[i,"b4"],4,parameters.loc[i,"type"],initiate=True)
                 
     return parameters
     
@@ -993,7 +1023,7 @@ def sample_parameters_continuous(boundaries,nan_value):
     
     for i in index:
     
-        parameters.loc[i,"sample"] = substring(parameters.loc[i,["b1","b2","b3","b4"]],parameters.loc[i,"low"],parameters.loc[i,"high"],4,parameters.loc[i,"type"],initiate=True)
+        parameters.loc[i,"sample"] = substring(parameters.loc[i,["b1","b2","b3","b4"]],parameters.loc[i,"b1"],parameters.loc[i,"b4"],4,parameters.loc[i,"type"],initiate=True)
                 
     return parameters
 
@@ -1231,6 +1261,7 @@ def mating_binary(parent1,parent2,ID):
 
 def mating_variable(parent1,parent2,ID):
     
+    betamax  = 2
     alpha = np.random.randint(0,len(parent1.parameters))
     offspring = [0,0]
     parents = [parent1,parent2]
@@ -1252,7 +1283,7 @@ def mating_variable(parent1,parent2,ID):
         if (type(sample1.loc[index[i]])!=int) & (type(sample2.loc[index[i]])!=int):
             new = deepcopy(offspring[0].parameters.loc[index[i],"sample"])
             # crossover with beta weighting sample 1 and 2
-            beta = np.random.uniform(0,1.5,len(sample1.loc[index[i]].returnString()))
+            beta = np.random.uniform(0,betamax,len(sample1.loc[index[i]].returnString()))
             new.setString(sample1.loc[index[i]].returnString()-beta*(sample1.loc[index[i]].returnString()-sample2.loc[index[i]].returnString()))
             new.fixBoundary()
             offspring[0].parameters.loc[index[i],"sample"] = new
@@ -1262,7 +1293,7 @@ def mating_variable(parent1,parent2,ID):
     for i in range(alpha,len(index)):
         if (type(sample1.loc[index[i]])!=int) & (type(sample2.loc[index[i]])!=int):
             new = deepcopy(offspring[1].parameters.loc[index[i],"sample"])
-            beta = np.random.uniform(0,1.5,len(sample1.loc[index[i]].returnString()))
+            beta = np.random.uniform(0,betamax,len(sample1.loc[index[i]].returnString()))
             new.setString(sample2.loc[index[i]].returnString()+beta*(sample1.loc[index[i]].returnString()-sample2.loc[index[i]].returnString()))  
             new.fixBoundary()
             offspring[1].parameters.loc[index[i],"sample"] = new
