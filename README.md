@@ -1,9 +1,7 @@
-# SDMIT-private
-private repository for development SDMIT version 2
+# SDMIT
+Python scripts to develop and perform model identification
 
-Python scripts to develop and perform model identification (for now only input variable selection) for a conceptually-based species distribution model
-
-© 2016, Sacha Gobeyn (sacha.gobeyn@ugent.be or sachagobeyn@gmail.com). 
+© 2017, Sacha Gobeyn (sacha.gobeyn@ugent.be or sachagobeyn@gmail.com). 
 
 Details: Script can be run from a (I)python editor or command line. Designed for batch simulations
  
@@ -12,16 +10,15 @@ Publication: This code is coupled to a publication, it is advised to first read 
 Usage: see SCRIPTS/script.py
 
 Requirements (tested with):
-  * Python 2.7.10
+  * Python 3.5.4
   
-  * Numpy 1.9.2  
+  * Numpy 1.13.1  
   
-  * Pandas 0.16.2
+  * Pandas 0.20.3
   
-  * Sklearn 0.16.1
-
+  * Sklearn 0.19.0
   
-  (tested on Python 2.7.10 with [Anaconda 2.3.0 (64-bit)](https://www.continuum.io/downloads "Anaconda"))
+  (tested with Python 3.5.4 with [Anaconda 3 (64-bit)](https://www.continuum.io/downloads "Anaconda"))
 
 Support: Please feel free to open an issue in case of a problem.
 
