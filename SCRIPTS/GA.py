@@ -127,7 +127,7 @@ def GA(model,model_inputs,boundaries,options,res,full_output=False):
             # Step 7: Dynamically adapt boundaries for optimisation (losen boundaries)
             "Only for parameter estimation"
             if mode!="binary":
-                population.adjustBoundaries(criteria,mode,population.best,run,multi_objective,os.path.join(res,"boundaries"),nan_value)
+                population.adjustBoundaries(criteria,mode,population.best,run,os.path.join(res,"boundaries"),nan_value)
             
             # Step 8: Print population and print message for generation
             if cond==True:
@@ -233,14 +233,14 @@ class Population():
         self.boundaries = boundaries
         self.objective_function = objective_function
        
-    def adjustBoundaries(self,criteria,mode,best,run,multi_objective,resmap,nan_value):
+    def adjustBoundaries(self,criteria,mode,best,run,resmap,nan_value):
 
         for i in self.chromosomes:
         
-            if multi_objective==False:
-                
+            if mode=="continuous":
+            
                 if i.fitness==best.fitness:
-                
+                    
                     i.mapParameters(np.nan)
                     # only for boundaries of continuous variables
                     cond = self.boundaries["type"]=="continuous"
@@ -504,7 +504,8 @@ class Population():
 
         # get best solution
         self.best.mapParameters(np.nan)
-        
+        self.best.parameters.loc[:,"ID"] = self.best.ID
+       
         return pd.DataFrame(data=data,columns=columns),self.best.parameters
     
 class chromosome():
