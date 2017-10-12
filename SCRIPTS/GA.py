@@ -123,6 +123,9 @@ def GA(model,model_inputs,boundaries,options,res,full_output=False):
                 population.FNDS()
                 population.CDA()  
                 population.resize()
+
+            chromosomes,best =  evaluate_chromosomes(population.chromosomes,population.best)
+            population.setBest(best)
             
             # Step 7: Dynamically adapt boundaries for optimisation (losen boundaries)
             "Only for parameter estimation"
@@ -437,6 +440,7 @@ class Population():
                 self.chromosomes[i].setPrintCrit(performance["TSS"])
                 if type(self.objective_function)==list:
                     self.chromosomes[i].setOFs([performance[j] for j in self.objective_function])
+                    self.chromosomes[i].setFitness(performance["TSS"])
                 else:
                     self.chromosomes[i].setFitness(-performance[self.objective_function] if self.objective_function in minimize else performance[self.objective_function])
         pool.join()
@@ -1075,7 +1079,7 @@ def evaluate_chromosomes(chromosomes,best):
 
     # elitism
     if type(best)!=float:
-        
+
         # if there is a chromosome with a better peformanca: replace
         if chromosomes[0].fitness < best.fitness:
             chromosomes.append(best)
@@ -1091,7 +1095,7 @@ def evaluate_chromosomes(chromosomes,best):
 
     else:
        best = deepcopy(chromosomes[0]);       
-      
+     
     return chromosomes,best
 
 def dominates(f1,f2):    
