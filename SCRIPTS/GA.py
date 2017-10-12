@@ -484,7 +484,7 @@ class Population():
         un_var.sort()
         
         # performance
-        perf_keys = list(self.chromosomes[0].performance.keys());
+        perf_keys = list(self.chromosomes[0].performance.keys());perf_keys.sort()
         columns = list(un_var)+["ID"]+["mutated"]+perf_keys+["rank"]
         # data
         data = np.full([len(self.chromosomes),len(columns)],None, dtype=np.object)
