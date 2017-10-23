@@ -56,7 +56,7 @@ def GA(model,model_inputs,boundaries,options,res,full_output=False):
 
     " Set environment EA, type of optimisation problem and objective function"
     mode,multi_objective,objective_function,nan_value,ncpu = set_environment_EA(options,res)
-    
+
     " Write initial logs"
     write_logs(n_chromosomes,selection_rate,mutation_rate,crossover_rate,mode,nan_value,adaptive,k1,k2,k3,k4,multi_objective,duplicates,res)
     

@@ -67,27 +67,32 @@ def calculate_performance(model_output,K,w=0.5,evaluate=False,Kmax=np.nan,thresh
     return criteria 
     
 def performance_threshold(x,y,criteria,threshold=np.nan,evaluation_criterion="TSS"):
-
+    """Note: we really need to clean this code up"""
     performance = {i:0. for i in criteria}
     
     "No threshold defined: Get best from one of the defined criteria"
-    if np.isnan(threshold):
+    if type(threshold) is not str:
         
-        l = np.arange(0,1.05,0.05)
-        v = np.zeros([len(l)])
-
-        "Check which threshold is the best, given the evalution criterion"        
-        for i in range(len(l)):
+        if np.isnan(threshold):
             
-            x_i = deepcopy(x)
-            x_i[x_i<l[i]] = 0
-            x_i[x_i!=0] = 1
-            v[i] = eval(evaluation_criterion+"(x_i,y)")
-            
-        opt_threshold = np.nanmean(l[v==np.nanmax(v)])
+            l = np.arange(0,1.05,0.05)
+            v = np.zeros([len(l)])
+    
+            "Check which threshold is the best, given the evalution criterion"        
+            for i in range(len(l)):
+                
+                x_i = deepcopy(x)
+                x_i[x_i<l[i]] = 0
+                x_i[x_i!=0] = 1
+                v[i] = eval(evaluation_criterion+"(x_i,y)")
+                
+            opt_threshold = np.nanmean(l[v==np.nanmax(v)])
         
+        else:
+            
+            opt_threshold = threshold
+    
     else:
-        
         opt_threshold = threshold
     
     performance["threshold"] = opt_threshold
@@ -95,10 +100,17 @@ def performance_threshold(x,y,criteria,threshold=np.nan,evaluation_criterion="TS
     "Get results with the found or defined threshold"
     for i in criteria:
         
-        x_i = deepcopy(x)
-        x_i[x_i<=opt_threshold] = 0
-        x_i[x_i!=0] = 1
+        x_i = deepcopy(x)    
         
+        if type(threshold) is str:
+            
+            if threshold=="prob":
+    
+                x_i = np.random.binomial(1, x_i)
+        else:
+            x_i[x_i<=opt_threshold] = 0
+            x_i[x_i!=0] = 1
+            
         performance[i] = eval(i+"(x_i,y)")        
     
     return performance

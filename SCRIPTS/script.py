@@ -810,6 +810,10 @@ def run_filter_model(model_input,resmap,ID,full_output=False):
         
         threshold = 1-np.sum(output["observation"])/len(output)
 
+    elif threshold == "prob":
+    
+        threshold = "prob"
+        
     else:
         
         threshold = float(threshold)
