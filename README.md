@@ -75,24 +75,24 @@ To finally determine species occurence one applies a threshold on the HSI (strin
 
 ![HSIthreshold](http://mathurl.com/yb4dhlkh.png)
 
-```
-So basically, the implemented species distribution model is a model relating habitat suitability to species occurence by means of a number of species response curves and a HSI threshold. What do we remember for the application of the model in SDMIT?
- 1. Set **logit** to **True** in the *settingsfile.txt* file if you want logistic increasing and decreasing functions describing the suboptimal conditions for SI. If **False** then linear functions will be set.
-  2. Select an interference/aggregation (**interference** in *settingsfile.txt*) function to compute SI to HSI (**squaredproduct** or **minimum** or **mean**) in the *settingsfile.txt*
- 3. Select a value for the **threshold** in the *settingsfile.txt*. One can also decide to maximise (**max**) the threshold based on the TSS (i.e. thresholds will vary over the models being optimised).
-```
+
+>So basically, the implemented species distribution model is a model relating habitat suitability to species occurence by means of a number of species response curves and a HSI threshold. What do we remember for the application of the model in SDMIT?
+ >1. Set **logit** to **True** in the *settingsfile.txt* file if you want logistic increasing and decreasing functions describing the suboptimal conditions for SI. If **False** then linear functions will be set.
+>2. Select an interference/aggregation (**interference** in *settingsfile.txt*) function to compute SI to HSI (**squaredproduct** or **minimum** or **mean**) in the *settingsfile.txt*
+>3. Select a value for the **threshold** in the *settingsfile.txt*. One can also decide to maximise (**max**) the threshold based on the TSS (i.e. thresholds will vary over the models being optimised).
+
 
 
 Now how does this optimisation work?
 -------------------------------------
 As mentioned above, these are a number of mode of actions. First you can choose if you want to do 'wrapper' or 'embedded' feature selection. The difference is quite easy, in the first one relies on the parameter estimation for ![theta](http://mathurl.com/y74s5qu3.png) and does not ask the algorithm to change them to search for a good model. In case of the second, one asks the algorithm to also change the values of these parameters, so to find 'better' or more optimal solutions. In general, one would prefer the second approach, as the feature search can be influenced by the set parameter values. However, if one is very confident about the parameters (with help of expert knowledge), one can decide to use 'wrapper' feature selection. Now, the method implemented to facilitate both ways of model learning is based on genetic algorithms. We will not get into the details of this exaclty works, and go further the practical aspect:
 
-```
-Choose in the *settings.txt* the **mode** (string)
-1. **variable**: Embedded feature selection
-2. **binary**: Wrapper feature selection
-That was easy, no?
-```
+
+>Choose in the *settings.txt* the **mode** (string)
+>1. **variable**: Embedded feature selection
+>2. **binary**: Wrapper feature selection
+>That was easy, no?
+
 
 
 
