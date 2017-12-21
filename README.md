@@ -35,9 +35,57 @@ of species response (here presence/absence) as a function of environmental gradi
  
  Ok, which SDM are we optimising?
 ---------------------------------
+The species distribution model currently implemented in the package is a simple SDM relating probability of species occurence to habitat suitability:
 
-The species response curves are defined by trapezoid curves or logit implemen-
-tations (logit).
+![PO](http://mathurl.com/ybwhlk2x.png)
+
+with 
+
+![HSI](http://mathurl.com/ybm8zpmt.png) 
+
+and x, the input data for a number of features. The relation between SI and x is determined by a species response curve that is a gaussian-like topped of function ...
+
+![fig0](docs/example-response_0.png)
+
+... or a skewed topped of function
+
+![fig1](docs/example-response_1.png)
+
+In the encoding of the algorithm (see *settingsfile.txt*), this logistic increasing and decreasing functions before and after the optimal range is indicated with the boolean **logit**. Turn logit of and we get linear curves. In mathematical terms the logit function is described by:
+
+![SI](http://mathurl.com/ycttr8xu.png)
+
+with 
+
+![p](http://mathurl.com/yc4m8bex.png)
+
+Now the values of ![theta](http://mathurl.com/y74s5qu3.png) representing the optimal and optimal range (see two example figures above). Now the values of SI for different features have to be combined to one HSI value and this can be done by choosing different aggregation functions (see string **interference** in *settingsfile.txt*). For one you could take the minimum (**minimum**) ...
+
+![min](http://mathurl.com/yavq2h89.png)
+
+... or the mean (**mean**) ... 
+
+![mean](http://mathurl.com/ybtoaaa9.png)
+
+... or the geometrix mean (**squaredproduct**), which could be considered as most adequate from a theoretical point of view ...
+
+![gm](http://mathurl.com/ycfp2r8e.png)
+
+To finally determine species occurence one applies a threshold on the HSI (string or float **threshold** in *settingsfile.txt*):
+
+![HSIthreshold](http://mathurl.com/yb4dhlkh.png)
+
+
+> So basically, the implemented species distribution model is a model relating habitat suitability to species occurence by means of a number of species response curves and a HSI threshold. What do we remember for the application of the model in SDMIT?
+> 1. Set **logit** to **True** in the *settingsfile.txt* file if you want logistic increasing and decreasing functions describing the suboptimal conditions for SI. If **False** then linear functions will be set.
+> 2. Select an interference/aggregation function to compute SI to HSI (**squaredproduct** or **minimum** or **mean**) in the *settingsfile.txt*
+> 3. Select a value for the **threshold** in the *settingsfile.txt*. One can also decide to maximise (**max**) the threshold based on the TSS (i.e. thresholds will vary over the models being optimised).
+
+
+Now how does this optimisation work?
+-------------------------------------
+
+
 
 The genetic algorithm encoding has different implemententations for (1), (2) 
     and (3):
