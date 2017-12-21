@@ -22,25 +22,19 @@ Requirements (tested with):
 
 Support: Please feel free to open an issue in case of a problem.
 
------------
-INTRODUCTION
------------- 
-The species distribution model identification tool is a software tool that aims 
-to identify (optimise) species distribution models with genetic algorithms. The
-implemented SDM is a habitat suitability model, aiming to define the relation 
-of species response (here presence/absence) as a function of environmental 
-gradients. The genetic algorithm serves as an optimisation method performing:
-    
-    (1) Input variable selection: Searching for a set of near-optimal input 
-                                  parameters which best describe observed pres-
-                                  ence/absence patterns (parameters of species
-                                  response curves have to be defined a priori).
-                                  
-    (2) Parameter estimation (PE):  Searching for a set of near-optimal species 
-                                    response parameters which best describe 
-                                    observed presence/absence patterns.
-                                    
-    (3) Model identification (MI): Combination of (1) and (2)
+What can we do with SDMIT?
+-------------------------
+The species distribution model identification tool is a software tool based on machine learning that aims to train species distribution models with genetic algorithms. The implemented SDM is a habitat suitability model, aiming to define the relation 
+of species response (here presence/absence) as a function of environmental gradients or feature. The genetic algorithm serves as an optimisation method performing:
+
+1. Wrapped Feature selection: Searching for a set of input features which best describe observed presence/absence patterns (with parameters of species response curves have to be defined a priori).
+                                                 
+2. Embedded Feature Selection: Searching for a set of input features and parameter estimates which best describe observed presence/absence patterns.
+
+3. Single or multi-objective optimisation: Considering one (simple genetic algorithm) or more objective (non-dominated sorting genetic algorithm II) for the optimisation.
+ 
+ Ok, which SDM are we optimising?
+---------------------------------
 
 The species response curves are defined by trapezoid curves or logit implemen-
 tations (logit).
