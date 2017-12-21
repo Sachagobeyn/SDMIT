@@ -51,7 +51,7 @@ and x, the input data for a number of features. The relation between SI and x is
 
 ![fig1](docs/example-response_1.png)
 
-In the encoding of the algorithm (see *settingsfile.txt*), this logistic increasing and decreasing functions before and after the optimal range is indicated with the boolean **logit**. Turn logit of and we get linear curves. In mathematical terms the logit function is described by:
+In the encoding of the algorithm (see *settings.txt*), this logistic increasing and decreasing functions before and after the optimal range is indicated with the boolean **logit**. Turn logit of and we get linear curves. In mathematical terms the logit function is described by:
 
 ![SI](http://mathurl.com/ycttr8xu.png)
 
@@ -59,7 +59,7 @@ with
 
 ![p](http://mathurl.com/yc4m8bex.png)
 
-Now the values of ![theta](http://mathurl.com/y74s5qu3.png) representing the optimal and optimal range (see two example figures above). Now the values of SI for different features have to be combined to one HSI value and this can be done by choosing different aggregation functions (see string **interference** in *settingsfile.txt*). For one you could take the minimum (**minimum**) ...
+Now the values of ![theta](http://mathurl.com/y74s5qu3.png) representing the optimal and optimal range (see two example figures above). Now the values of SI for different features have to be combined to one HSI value and this can be done by choosing different aggregation functions (see string **interference** in *settings.txt*). For one you could take the minimum (**minimum**) ...
 
 ![min](http://mathurl.com/yavq2h89.png)
 
@@ -71,20 +71,18 @@ Now the values of ![theta](http://mathurl.com/y74s5qu3.png) representing the opt
 
 ![gm](http://mathurl.com/ycfp2r8e.png)
 
-To finally determine species occurence one applies a threshold on the HSI (string or float **threshold** in *settingsfile.txt*):
+To finally determine species occurence one applies a threshold on the HSI (string or float **threshold** in *settings.txt*):
 
 ![HSIthreshold](http://mathurl.com/yb4dhlkh.png)
 
 
 >So basically, the implemented species distribution model is a model relating habitat suitability to species occurence by means of a number of species response curves and a HSI threshold. What do we remember for the application of the model in SDMIT?
- >1. Set **logit** to **True** in the *settingsfile.txt* file if you want logistic increasing and decreasing functions describing the suboptimal conditions for SI. If **False** then linear functions will be set.
->2. Select an interference/aggregation (**interference** in *settingsfile.txt*) function to compute SI to HSI (**squaredproduct** or **minimum** or **mean**) in the *settingsfile.txt*
+ >1. Set **logit** to **True** in the *settings.txt* file if you want logistic increasing and decreasing functions describing the suboptimal conditions for SI. If **False** then linear functions will be set.
+>2. Select an interference/aggregation (**interference** in *settings.txt*) function to compute SI to HSI (**squaredproduct** or **minimum** or **mean**) in the *settings.txt*
 >3. Select a value for the **threshold** in the *settingsfile.txt*. One can also decide to maximise (**max**) the threshold based on the TSS (i.e. thresholds will vary over the models being optimised).
 
-
-
-Now how does this optimisation work?
--------------------------------------
+Now what can we optimise and how?
+---------------------------------
 As mentioned above, these are a number of mode of actions. First you can choose if you want to do 'wrapper' or 'embedded' feature selection. The difference is quite easy, in the first one relies on the parameter estimation for ![theta](http://mathurl.com/y74s5qu3.png) and does not ask the algorithm to change them to search for a good model. In case of the second, one asks the algorithm to also change the values of these parameters, so to find 'better' or more optimal solutions. In general, one would prefer the second approach, as the feature search can be influenced by the set parameter values. However, if one is very confident about the parameters (with help of expert knowledge), one can decide to use 'wrapper' feature selection. Now, the method implemented to facilitate both ways of model learning is based on genetic algorithms. We will not get into the details of this exaclty works, and go further the practical aspect:
 
 
@@ -93,7 +91,13 @@ As mentioned above, these are a number of mode of actions. First you can choose 
 >2. **binary**: Wrapper feature selection
 >That was easy, no?
 
+Now we have defined what we want to identify, however, we also need to define what we want to optimise. Typically, this is a objective function based on a accuracy measure. Many measures are available (Mouton *et al.*, 2010), however, the true skill statistic is an often used statistic:
 
+![TSS](http://mathurl.com/yb6zzuwk.png)
+
+with:
+
+![SNSP](http://mathurl.com/y9s9xdrh.png)
 
 
 The genetic algorithm encoding has different implemententations for (1), (2) 
