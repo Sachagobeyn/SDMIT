@@ -109,7 +109,7 @@ INSTRUCTIONS
                             the variables checked in inputdata, beware captions,
                             special characters, ..)
                             
-      filter_parameters [STRING]  .csv file with parameters of species response 
+      model_parameters [STRING]  .csv file with parameters of species response 
                                   curves
                             
       resmap [STRING]       name of map to print results
@@ -156,7 +156,7 @@ INSTRUCTIONS
       consider [BINARY]     consider variable in optimisation
 
       -------------
-      filter_parameters.csv
+      model_parameters.csv
       -------------
       list with columns (taxon,value,type,b1->b4,low,high,a1->a4,variable)
       
@@ -252,14 +252,15 @@ warnings.filterwarnings("error")
 
 def read_parameterfile(parameterfile):
 
-    """ 
-    Get code arguments from the parameterfile
+    """ Get code arguments from the parameterfile
     
-    Arguments:
-        'parameterfile' (str): name of the parameterfile
+    Parameters
+    ----------        
+    'parameterfile' (str): name of the parameterfile
     
-    Returns:
-        'code_arguments' (dictionary):
+    Returns
+    -------
+    'code_arguments' (dictionary):
         
             'inputdata' (str): name of inputdata 
             NOTE: structure inputdata should be conform Section XX tutorial
@@ -270,7 +271,7 @@ def read_parameterfile(parameterfile):
     
     """
     code_arguments = {}
-    keys = ["inputdata","taxon","variables","filter_parameters","resample","resmap","settings","w","full_output","logit"]
+    keys = ["inputdata","taxon","variables","model_parameters","resmap","settings","full_output","logit"]
     
     "Read lines"
     with open(parameterfile) as f: 
@@ -444,7 +445,7 @@ def overwrite_arguments(arguments):
     flags["res"] = "resmap"
     flags["v"] = "variables"
 
-    flags["fp"] = "filter_parameters"
+    flags["fp"] = "model_parameters"
     flags["set"] = "settings"
     flags["logit"] = "logit"
     
@@ -504,7 +505,7 @@ def overwrite_settings(settings):
             
     return settings
 
-def run(inputdata,taxon,variables,filter_parameters,resmap,settings,full_output=False):
+def run(inputdata,taxon,variables,model_parameters,resmap,settings,full_output=False):
     
     """ 
     Run script for model development and optimisation
@@ -526,21 +527,21 @@ def run(inputdata,taxon,variables,filter_parameters,resmap,settings,full_output=
     
     "Load and sample data"
     from data_processing import load_and_preproces_data
-    inputdata,filter_parameters,variables = load_and_preproces_data(inputdata,taxon,filter_parameters,variables,resmap,settings["nan_value"])
+    inputdata,model_parameters,variables = load_and_preproces_data(inputdata,taxon,model_parameters,variables,resmap,settings["nan_value"])
 
     "Check input for the optimisation"
-    check_input_code(inputdata,taxon,filter_parameters,variables)
+    check_input_code(inputdata,taxon,model_parameters,variables)
 
     "Optimise model"
-    performance,chromosomes = optimisation(inputdata,taxon,filter_parameters,variables,settings,resmap,full_output=full_output)
+    performance,chromosomes = optimisation(inputdata,taxon,model_parameters,variables,settings,resmap,full_output=full_output)
 
     "Print performance"
     print_performance(performance,resmap)
 
     "Print models"
-    print_models(inputdata,filter_parameters,taxon,settings["interference"],settings,chromosomes,resmap)
+    print_models(inputdata,model_parameters,taxon,settings["interference"],settings,chromosomes,resmap)
 
-def check_input_code(inputdata,taxon,filter_parameters,variables):
+def check_input_code(inputdata,taxon,model_parameters,variables):
     
     cond = False
     
@@ -551,7 +552,7 @@ def check_input_code(inputdata,taxon,filter_parameters,variables):
         error.append("Taxon in parameterfile is not found inputdata file")
         cond = True
 
-    if taxon not in filter_parameters["taxon"].tolist():
+    if taxon not in model_parameters["taxon"].tolist():
 
         error.append("Taxon in parameterfile is not found model parameter file")
         cond = True
@@ -563,7 +564,7 @@ def check_input_code(inputdata,taxon,filter_parameters,variables):
             error.append("None of the variables in variable file not found in inputdata file")
             cond = True
         
-        if np.sum(filter_parameters["variable"].isin(variables))==0:
+        if np.sum(model_parameters["variable"].isin(variables))==0:
 
             error.append("None of the variables in variable file not found in filter parameter file")
             cond = True
@@ -573,7 +574,7 @@ def check_input_code(inputdata,taxon,filter_parameters,variables):
         print("[PROGRAMMED EXIT] \n\t"+"\n \t".join(error))
         sys.exit("="*19) 
   
-def optimisation(inputdata,taxon,filter_parameters,variables,settings,resmap,full_output=False):
+def optimisation(inputdata,taxon,model_parameters,variables,settings,resmap,full_output=False):
 
     """ 
     Function to run model and optimise the developed model.
@@ -596,8 +597,8 @@ def optimisation(inputdata,taxon,filter_parameters,variables,settings,resmap,ful
     "Prepare inputs to run model and run the filter model"
     model_inputs = {}
     model_inputs["data"]= inputdata
-    filter_parameters = filter_parameters.sort_values(["variable","value"],ascending=True)
-    model_inputs["parameters"] = filter_parameters
+    model_parameters = model_parameters.sort_values(["variable","value"],ascending=True)
+    model_inputs["parameters"] = model_parameters
     model_inputs["interference"]=settings["interference"]
     model_inputs["settings"] = settings
     model_inputs["logit"] = settings["logit"]
@@ -611,10 +612,10 @@ def optimisation(inputdata,taxon,filter_parameters,variables,settings,resmap,ful
     boundaries["sample"]=1.
     
     "Define boundary for model"
-    boundaries = filter_parameters
+    boundaries = model_parameters
 
     "Check input for model and raise warning if model will be empty"
-    check_input_code(inputdata,taxon,filter_parameters,variables)
+    check_input_code(inputdata,taxon,model_parameters,variables)
     
     from GA import GA    
     performance,solution = GA("translate_chromosome2model",model_inputs,boundaries,settings,resmap,full_output=full_output)
@@ -849,7 +850,7 @@ def print_performance(performance,resmap):
         f.write(i+","+str(performance[i])+'\n')
     f.close()
     
-def print_models(inputdata,filter_parameters,taxon,interference,settings,chromosomes,resmap):
+def print_models(inputdata,model_parameters,taxon,interference,settings,chromosomes,resmap):
     
     model_input = {}
     model_input["data"]= inputdata
@@ -859,7 +860,7 @@ def print_models(inputdata,filter_parameters,taxon,interference,settings,chromos
     model_input["threshold"] = settings["threshold"]
     for i in chromosomes:
         variable = i.parameters["variable"][~(i.parameters["sample"]==0)].tolist()
-        par_i,K = translate_chromosome(deepcopy(filter_parameters[filter_parameters["variable"].isin(variable)]),i,settings["mode"])
+        par_i,K = translate_chromosome(deepcopy(model_parameters[model_parameters["variable"].isin(variable)]),i,settings["mode"])
 #        cond =  ~par_i["grid"].isnull()
 #        par_i["grid"][cond] = par_i["grid"][cond].apply(lambda x:x.returnGrid())
         par_i.to_csv(os.path.join(resmap,"optimisation_summary","parameters_"+str(i.ID)+".csv"))
@@ -870,7 +871,7 @@ def print_models(inputdata,filter_parameters,taxon,interference,settings,chromos
             run_filter_model(model_input,os.path.join(resmap,"model_runs"),i.ID,full_output=True)
 
     variables = chromosomes[0].parameters["variable"][~(chromosomes[0].parameters["sample"]==0)].tolist()
-    opt_parameters,_ = translate_chromosome(deepcopy(filter_parameters.loc[filter_parameters["variable"].isin(variables)]),chromosomes[0],mode=settings["mode"])
+    opt_parameters,_ = translate_chromosome(deepcopy(model_parameters.loc[model_parameters["variable"].isin(variables)]),chromosomes[0],mode=settings["mode"])
     opt_parameters.to_csv(os.path.join(resmap,"optimal_parameters_"+taxon+".csv"))
     
 if __name__ =="__main__":
@@ -902,5 +903,5 @@ if __name__ =="__main__":
     check_settings(settings)
         
     "Run code"
-    run(arguments["inputdata"],arguments["taxon"],arguments["variables"],arguments["filter_parameters"],arguments["resmap"],settings,full_output=eval(arguments["full_output"]))
+    run(arguments["inputdata"],arguments["taxon"],arguments["variables"],arguments["model_parameters"],arguments["resmap"],settings,full_output=eval(arguments["full_output"]))
 

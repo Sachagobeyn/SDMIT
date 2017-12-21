@@ -3,5 +3,5 @@ taxon		Baetidae
 variables	../considered_variables.csv
 resmap		Results
 settings	../settings.txt
-filter_parameters ../parameters_Baetidae.csv
+model_parameters ../parameters_Baetidae.csv
 full_output	False
