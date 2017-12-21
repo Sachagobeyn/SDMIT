@@ -33,7 +33,7 @@ of species response (here presence/absence) as a function of environmental gradi
 
 3. Single or Multi-Objective Optimisation (SOO and MOO): Considering one (simple genetic algorithm) or more objective (non-dominated sorting genetic algorithm II) for the optimisation.
  
- Ok, which SDM are we optimising?
+ Ok, which SDM are we optimising? [TO DO!!!]
 ---------------------------------
 The species distribution model currently implemented in the package is a simple SDM relating probability of species occurence to habitat suitability:
 
@@ -95,50 +95,39 @@ Now we have defined what we want to identify, however, we also need to define wh
 
 ![TSS](http://mathurl.com/yb6zzuwk.png)
 
-with:
+with (Sn = correct estimation of species presence, Sp = correct estimation of species absence):
 
 ![SNSP](http://mathurl.com/y9s9xdrh.png)
 
+with: 
 
-The genetic algorithm encoding has different implemententations for (1), (2) 
-    and (3):
-    
-    (1) Binary: a string of 0 and 1s with a length equal to the  number of 
-                    cosidered input variables.
-    (2) Continuous: a string of real-values (Haupt and Haupt, 2004) bounded by 
-                        predefined boundaries b. Length is equal to the number 
-                        of input variables multiplied by 4.
-    (3) List of list:   a list of list with real-values bounded by predefined 
-                        boundaries b. The first order list is a binary string,
-                        whereas a second order continuous string is defined 
-                        when a "1" is defined in the first order list. IVS is 
-                        encoded in the first order list, PE in the second order
+![confusionmatrix](http://mathurl.com/ybpbre3c.png)
 
-Single objective or multi-objective optimisation is possible, for single object-
-ive optimisation True Skill Statistic, Kappa, Sum of Squared Errors, .. can be 
-used. For definition of these measures see Mouton et al. (2010). Multi-objecti-
-ve optimisation is also feasable, by searching for a Pareto frontier with a non
--dominated sorting genetic algorithme approach (Deb, 2002). Any of the imple-
-mented objective can be used.
+So we can decide to maximise on TSS (single objective optimisation) or we could also optimise on both. Now, how would the latter work? It would mean we would have to optimise two criteria; the correct estimation of species presence, on the one hand, and species absence, on the other. However, the objective of optimising the two measures can be conflicting: SDMs that estimate species presence prefectly fail to estimate absence well and vice versa. Now, to identify this trade-off between objectives, specific algorithms are developed some time ago. Here, we use the non-dominated sort genetic algorithm II (NSGA-II) to identify the trade-off between Sn and Sp. Also here, the indication whether we want to choose for SOO or MOO are in the *setting.txt* file.
 
-For implementation of the genetic operators: see
-    ADD
 
-For settings of values for hyper parameters, one is advised to follow Gibbs et
-    al. (2008) as they where found to be near-optimal.
-        
-        (1) Determine function evaluations by dividing the computer time 
-            available by the average time to compute the fitness function
-        (2) Solve equation 1.1 to determine the number of chromosomes:
-                
-            FE/N log (1-1/N) = -M-log(sqrt(l/12))           equation 1.1
-            
-            with M = 3 and l = (maximum) length of chromosomes
-            for variable length encoding = compute maximum length
-            
-        (3) Compute mutation rate by dividing 5 by number of chromosomes
-        (4) Use elist approach and set crossover rate to 1
-            (selection rate = 0.5)
+>1. If you want to do SOO, go to the *settings.txt* file and set **multi_objective** to False. Otherwise (MOO) set it to True.
+>2. Choose you objective function **objective_function** in the *settings.txt* file, for SOO, this can be the TSS, Kappa, AUC, AIC, BIC or CCI (see Mouton *et al.*, 2010 for formulation). For MOO, one has to define multiple objectives and delimit them with a comma (e.g. 'Sn,Sp'). The current impementation has been tested for two objectives, but in practice should also work for three to four objectives.
+
+Finally, there are a number of settings we need to define before we start the algorithm. Now, we could just use standard values for these 'hyper parameters', however, depending on how much time you have, you might want to tune these a bit, since one could end up with non-satisfying results when stopping the search algorithm to soon. Basically, we need to calculate a few things:
+
+1. The number of algorithm iteration cycles.
+2. The population size PS, the number of solutions are evaluated in one algorithm iteration cycle.
+3. The mutation rate pm, determing the rate of random perturbations in the solutions (e.g. change a parameter value of  species response curve to a new random value).
+4. The selection rate, determining how much solutions of an algorithm iteration cycle are copy-pasted to the next cyle, which we typically set to 0.5.
+5. The crossover rate pc, determining how the solutions are 'combined' to new solutions (compare it with the concept of inheritance  from parents to offspring) which we can set to 1.
+
+Now about the last two we don't really need to worry, however the first three are quite important since they interact with each other. Luckily, a smart guy, Matthew Gibbs came up with some guidelines to determine these three hyper parameters and it turns out that they work quite well. During my research, I did a number of tests and also found them to work well. So:
+
+1. Determine how much time you want the algorithm to run. You can calculate this with how long a fitness evaluation (a single SDM run) takes (for instance 1 second) and the time you have available (10 minutes = 600 seconds), i.e. determine function evaluations by dividing the computer time available by the average time to compute the fitness function. Thus function evaluation is then - in this example - equal to 600.
+
+2. Solve next equation to find PS with M = 3 and l equal to 4 multiplied by number of variables (*for embedded feature selection!!!*) OR equal to the number of variables (*for wrapper feature selection*):
+
+![FE](http://mathurl.com/ycrp8uje.png)
+
+3. The mutation rate pm is equal to 5 devided by PS
+
+4. The number of algorithm iteration cycles would then be equal to 600/PS
 
 References:
 -----------
@@ -150,7 +139,7 @@ Haupt, R.L., Haupt, S.E., 2004. Algorithms Practical Genetic Algorithms, 2nd ed.
 
 Mouton, A.M., De Baets, B., Goethals, P.L.M., 2010. Ecological relevance of performance criteria for species distribution models. Ecol. Modell. 221,1995–2002.
 
-
+<!---
 ------------
 INSTRUCTIONS
 ------------ 
@@ -308,6 +297,7 @@ INSTRUCTIONS
       -logit                        True or False
       
 """
+-->
 
 
 Licensed under [ CC BY 4.0 Creative Commons](https://creativecommons.org/licenses/by/4.0/ "CC")
