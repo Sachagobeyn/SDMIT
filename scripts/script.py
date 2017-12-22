@@ -268,18 +268,22 @@ def read_parameterfile(parameterfile):
             NOTE: structure variables should be conform Section XX tutorial
             'taxon' (str): name of the taxon
             'resmap' (str): name of directory to write output
-    
+            'model_parameters' (str): name of model_parameters
+             NOTE: structure variables should be conform Section XX tutorial           
+            'full_output' (bool): write out all model runs
+            'logit' (bool): use logistic increasing and decreasing function to
+                            describe species response
     """
     code_arguments = {}
     keys = ["inputdata","taxon","variables","model_parameters","resmap","settings","full_output","logit"]
     
-    "Read lines"
+    "Read lines for parameterfile"
     with open(parameterfile) as f: 
         lines = []
         for line in f:
             lines.append(line.rstrip('\n'))    
     
-    "If parameter is defined, overwrite"
+    "If parameter is defined in the parameterfile, overwrite default"
     for line in lines:
         
         line = re.split(r'[;,\s]\s*', line)
@@ -291,16 +295,16 @@ def read_parameterfile(parameterfile):
     return code_arguments
 
 def read_settingsfile(settingfile):    
-    """ 
-    Get algorithm parameters for model development and optimisation from parameterfile
+    """ Get algorithm parameters for model development and optimisation from parameterfile
     
-    Arguments:
+    Parameters
+    ----------  
         'settingsfile' (str): name of file with settings
-        'type' (str): either the settingsfile for the model development (md)
-                    or model optimisation (ga)
-    
-    Returns:
-       'settings' (dictionary): see function 'default_parameters'
+        
+    Returns
+    ----------  
+       'settings' (dictionary): for explanation settings see function
+       'default_settings'
     
     """
     settings = default_settings()
@@ -309,15 +313,16 @@ def read_settingsfile(settingfile):
     return settings
     
 def default_settings():
-    """ 
-    Define default settings for model development and optimisation
+    """ Define default settings for optimisation
     
-    Arguments:
-        'filetype' (str): either model development (md) or optimisation (ga)
+    Parameters
+    ----------  
+        none
     
-    Returns:
-       'model_settings' (dictionary): default settings for the model development
-       'ga_settings' (dictionary): default settings for the genetic algorithm 
+    Returns
+    -------
+       'settings' (dictionary): default settings for the genetic algorithm 
+       
     """
      
     settings = {}
@@ -358,7 +363,13 @@ def default_settings():
     return settings
    
 def default_settings_structure(settings):
-  
+    """ Define default settings for species distribution model
+    
+    Arguments:
+       'settings' (dictionary): default settings for the genetic algorithm 
+    """
+     
+    
     #used for run_filter_model, userdefined)   
     settings["interference"] = "squaredproduct"
     settings["logit"] = False

@@ -202,7 +202,7 @@ class EFM():
             
             if mode == "minimum":
                 
-                print("implement")
+                eturn self.model.groupby(["sample","X","Y","date","taxon"]).aggregate({"HSI":np.min}).reset_index()
                 
             if mode == "product":
                 
