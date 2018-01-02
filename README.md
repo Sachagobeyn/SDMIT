@@ -146,7 +146,7 @@ Step 1: Prepare input files
 4. [settings file](settings.txt): a file delimited by tabs indicating the settings for the model to run. A list of important settings are already reported above and all are summarized below:
 
 | tag        | type | default   | explanation / notes |
-| ---|:---:|:---:|:---:|
+| ---|:---:|:---:|---|
 | nan_value   | float  | 100000000000000 | nan value used in computation objective function|
 | multi_objective | boolean    | False      | SOO (False) or MOO (True) |
 | objective_function | float | TSS     |    objective function used to optimise. If multiple objectives are used, then one has to delimit the objectives with a comma (e.g. Sn,Sp) |
@@ -165,7 +165,7 @@ Step 1: Prepare input files
 5. [code parameter file](parameterfile.txt): a file delimited by tabs linking files together so [code](scripts/script.py) can run in command line. 
 
 | tag        | type | explanation / notes |
-| ---|:---:|:---:|
+| ---|:---:|---|
 | inputdata   | string  | file name of csv containing inputdata |
 | taxon | string     | name of taxon, make sure name is the same as in  [input data file](inputdata_Baetidae.csv) and  [model parameters file](parameters_Baetidae.csv) |
 | variables | string  |   file name of csv containing considered variables for training |
