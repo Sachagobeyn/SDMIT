@@ -7,8 +7,6 @@ Details: Script can be run from a (I)python editor or command line. Designed for
  
 Publication: This code is coupled to a publication, it is advised to first read the publication.
 
-Usage: see SCRIPTS/script.py
-
 Requirements (tested with):
   * Python 3.5.4
   
@@ -18,12 +16,14 @@ Requirements (tested with):
   
   * Sklearn 0.19.0
   
-  (tested with Python 3.5.4 with [Anaconda 3 (64-bit)](https://www.continuum.io/downloads "Anaconda"))
+Tested with Python 3.5.4 with [Anaconda 3 (64-bit)](https://www.continuum.io/downloads "Anaconda"))
+on UBUNTU 16.04 LTS
+
+Note: Should run cross OS
 
 Support: Please feel free to open an issue in case of a problem.
 
 ## Section 1: What can we do with SDMIT?
-
 
 The species distribution model identification tool is a software tool based on machine learning that aims to train species distribution models with genetic algorithms. The implemented SDM is a habitat suitability model, aiming to define the relation 
 of species response (here presence/absence) as a function of environmental gradients or feature. The genetic algorithm serves as an optimisation method performing:
@@ -178,6 +178,35 @@ The Python code is developed in a way it can run as an executable by typing in c
 
 ### Step 2: Run model
 
+With the given example input files, we should be able to do a test run of the code. There are two options:
+
+1. Run the model in command-line by going to the folder 'SDMIT/script.py' and typing 'python scripts/script.py parameterfile.txt'
+
+2. Open your favorite IDE (spyder, pycharm, ..) and run script.py. It is important to note that script.py will only run in this mode if you use the correct name in the main function:
+
+```python
+if __name__ =="__main__":
+ 
+    print("="*19)
+    print("SDMIT (version 2)")
+    print("="*19)    
+    print(" CC BY 4.0 Creative Commons, sacha gobeyn, \n"+
+          " sacha.gobeyn at ugent.be OR sachagobeyn at gmail.com")
+    print(" https://github.com/Sachagobeyn/SDMIT \n https://github.com/Sachagobeyn/SDMIT/releases/tag/v2.0.0")
+    print(" Reading parameterfile and code settings")
+       
+    "Read parameterfile"
+    if len(sys.argv)>1: #in terminal
+        arguments = read_parameterfile(sys.argv[-1])
+    else: # in IDE
+        arguments =  read_parameterfile("../parameterfile.txt")
+    ..
+    
+    ```
+### Step 3: Check results
+
+In the results folder one can find three maps, with only optimisation results being usefull. Here, we can find the output files and results for every iteration (0 to number of iterations). In each of these files, we can find the considered variables and their parameter values (embedded feature selection) or in-/exclusion (wrapper feature selection) together with the values for different evaluation measures (CCI, AUC, Kappa, TSS, AIC, BIC, ..). Also a unique ID is found which refers to the model ID. If full_outputin the [code parameter file](parameterfile.txt) is True than we can find the model in X
+
 ## References:
 
 Deb, K., Pratap, A., Agarwal, S., Meyarivan, T., 2002. A fast and elitist multiobjective genetic algorithm: NSGA-II. IEEE Trans. Evol. Comput. 6, 182–197.
@@ -187,166 +216,5 @@ Gibbs, M.S., Dandy, G.C., Maier, H.R., 2008. A genetic algorithm calibration met
 Haupt, R.L., Haupt, S.E., 2004. Algorithms Practical Genetic Algorithms, 2nd ed. John Wiley & Sons, Inc., Hoboken.
 
 Mouton, A.M., De Baets, B., Goethals, P.L.M., 2010. Ecological relevance of performance criteria for species distribution models. Ecol. Modell. 221,1995–2002.
-
-<!---
-------------
-INSTRUCTIONS
------------- 
-
-      SDM optimisation is run by running 'script.py' in Python 
-      OR in command line 'python script.py -flags'
-      
-      Implemented for batch simulations
-      
-      The "parameterfile.txt"-file defines  the input for the code whereas the 
-      "settings.txt"-file specify the settings for the model and genetic algorithm
-      
-      -----------------
-      parameterfile.txt
-      -----------------
-      
-      inpudata [STRING]     .csv file with inputdata 
-                            (col: [ID,X,Y,taxon,date,abundance,value,variable])
-
-      taxon [STRING]        name of taxon to develop and optimise model
-                            (make sure name is in column 'taxon' in inputdata)  
- 
-      variables [STRING]    .csv file with variables to consider in model
-                            (col: [variable,consider,name_sim], name_sim are 
-                            the variables checked in inputdata, beware captions,
-                            special characters, ..)
-                            
-      filter_parameters [STRING]  .csv file with parameters of species response 
-                                  curves
-                            
-      resmap [STRING]       name of map to print results
- 
-      settings [STRING]     name of file containing options for genetic algo-
-                            rithm and SDM.
-                            
-      full_ouput [True OR   True or False
-                  False]
-
-      ------------
-      inpudata.csv
-      ------------
-      list with columns (ID,taxon,abundance,variable,value)
-      
-      ID [INT]              unique ID of point
-      
-      X [FLOAT]             X coordinate of point, can include nans
-      
-      Y [FLOAT]             Y coordinate of point, can include nans
-              
-      date [~]              date, can include nans
-          
-      taxon [STRING]        name of observed taxon
-      
-      abundance [INT        presence/absence or abundance of taxon
-                 OR FLOAT]
-      
-      variable  [STRING]    name of measured variable (names must be compatible
-                            with name_sim in variables file in parameterfile.txt)
-      
-      value [FLOAT]         value of the environmental variable
-            
-      -------------
-      variables.csv
-      -------------
-      list with columns (variable,consider,name_sim)
-      
-      name_sim [STRING]     name of variable in model (names must be compatible
-                            inputdata.csv)
-      
-      variables [STRING]    synonym or explanation of variable
-      
-      consider [BINARY]     consider variable in optimisation
-
-      -------------
-      filter_parameters.csv
-      -------------
-      list with columns (taxon,value,type,b1->b4,low,high,a1->a4,variable)
-      
-      variable [STRING]     name of variable in model (names must be compatible
-                            inputdata.csv)
-      
-      taxon [STRING]        name of observed taxon
-
-      a1 [FLOAT]            lower boundary of range (SI!=0) of species response 
-                            curve, bounded by [low,b2]
-      
-      a2 [FLOAT]            lower boundary of optimal range (SI = 1) of species 
-                            response curve, bounded by [b1,b3]
-
-      a3 [FLOAT]            upper boundary of optimal range (SI = 1) of species 
-                            response curve, bounded by [b2,b4]
-
-      a4  [FLOAT]           upper boundary of range (SI != 0) of species resp-
-                            ponse curve, bounded by [b3,high]
-      
-      low, high, b0, b1,    boundaries for a (the boundaries b are adjusted                                      
-      b2, b3 and b4         dynamicaly when best solution in genetic algorithm
-      [FLOAT]               goes out of bound)
-      
-      --------------
-      settings.txt
-      --------------
-      
-      nan_value [FLOAT]             value for nan's in optimisation 
-                                    (default: 100000)
-      
-      number_of_chromosomes [INT]   number of chromosomes to run GA
-                                    (default: 100)
-    
-      selection_rate [FLOAT]        selection rate of population per generation
-                                    (default: 0.5 -> 50%)
-                                    
-      crossover_rate [FLOAT]        crossover rate of population
-                                    (default: 1. -> 100%)
-      
-      mutation_rate [FLOAT]         mutation rate of genes in chromosomes
-                                    (default: 0.05 -> 5%)
-      
-      multi_objective [True         'True' or 'False'
-                      OR False]     (default: 'False')
-     
-      objective_function [STRING]   the objective function to minimize
-                                    (default: TSS)
-     
-      maximum_runs [INT]            maximum number of generations to calculate
-                                    (default: 200)
-                                         
-      ncpu [INT]                    number of cpu's to use on machine 
-                                    (-1 = all)
-     
-      mode [STRING]                 'binary' (IVS), 'continuous' (PE), variable
-                                    (MI) (default: MI)
-
-      full_output [True 
-                  OR False]         print all outputs of every chromosoom
-                                    (default: 'False')
-     
-    
-      ------
-      flags (use by running command line python script.py -flags)
-      ------
-      
-      -i                            name of inputdata file
-      
-      -v                            name of variables file
-      
-      -t                            name of the taxon
-    
-      -res                          name of directory to write output
-      
-      -fp                           parameters of SDM model (species response 
-                                     curves)
-      -set                          settingsfile
-      
-      -logit                        True or False
-      
-"""
--->
-
 
 Licensed under [ CC BY 4.0 Creative Commons](https://creativecommons.org/licenses/by/4.0/ "CC")
