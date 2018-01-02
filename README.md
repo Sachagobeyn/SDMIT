@@ -117,17 +117,19 @@ Finally, there are a number of settings we need to define before we start the al
 4. The selection rate, determining how much solutions of an algorithm iteration cycle are copy-pasted to the next cyle, which we typically set to 0.5.
 5. The crossover rate pc, determining how the solutions are 'combined' to new solutions (compare it with the concept of inheritance  from parents to offspring) which we can set to 1.
 
-Now about the last two we don't really need to worry, however the first three are quite important since they interact with each other. Luckily, a smart guy, Matthew Gibbs came up with some guidelines to determine these three hyper parameters and it turns out that they work quite well. During my research, I did a number of tests and also found them to work well. So:
+Now about the last two we don't really need to worry, however the first three are quite important since they interact with each other. Luckily, a smart guy, Matthew Gibbs came up with some guidelines to determine these three hyper parameters and it turns out that they work quite well. During my research, I did a number of tests and found them to work well. The guidelines:
 
-1. Determine how much time you want the algorithm to run. You can calculate this with how long a fitness evaluation (a single SDM run) takes (for instance 1 second) and the time you have available (10 minutes = 600 seconds), i.e. determine function evaluations by dividing the computer time available by the average time to compute the fitness function. Thus function evaluation is then - in this example - equal to 600.
+1. Determine how much time you want the algorithm to run. You can calculate this with how long a fitness evaluation (a single SDM run) takes (for instance 0.1 second) and the time you have available (30 minutes = 1800 seconds), i.e. determine function evaluations by dividing the computer time available by the average time to compute the fitness function. Thus function evaluation is then - in this example - equal to 18000.
 
-2. Solve next equation to find PS with M = 3 and l equal to 4 multiplied by number of variables (*for embedded feature selection!!!*) OR equal to the number of variables (*for wrapper feature selection*):
+2. Solve next equation to find PS with M = 3 and l equal to 4 multiplied by number of variables (*for embedded feature selection!!!*) OR equal to the number of variables (*for wrapper feature selection*) (for l is 10, approximately a value of 50 is found for PS):
 
 ![FE](http://mathurl.com/ycrp8uje.png)
 
-3. The mutation rate pm is equal to 5 devided by PS
+3. The mutation rate pm is equal to 5 divided by PS (in this example 0.1).
 
-4. The number of algorithm iteration cycles would then be equal to 600/PS
+4. The (minimum) number of algorithm iteration cycles would then be equal to FE/PS (approximately 360 for N = 50 and FE = 18000).
+
+> Compute an approximate value for the hyper parameters by using the [hyperparameters.py](scripts/hyperparameters.py) function. Set selection rate equal to 0.5, crossover rate equal to 1 in the *settings.txt*.
 
 References:
 -----------
