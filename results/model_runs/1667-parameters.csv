@@ -1,0 +1,5 @@
+,Unnamed: 0,taxon,value,type,b1,b2,b3,b4,low,high,a1,a2,a3,a4,variable
+7,7,Baetidae,,continuous,2.7180675905004157,22.5,8.73,79.87603521062448,5.0,117.6,5.0,8.73,22.5,60.0,COD
+3,3,Baetidae,,continuous,0.73,5.6725,1.9225,25.43,0.73,66.84,0.73,1.9225,5.6725,25.43,Chlorophyll
+11,11,Baetidae,,continuous,3.0,165.0,43.5,1075.0,2.0,1075.0,3.0,43.5,165.0,1075.0,Elevation
+6,6,Baetidae,,continuous,0.2,5.07,1.3725,98.19991907011541,0.0,355.63,0.2,1.3725,5.07,85.43,Turbidity

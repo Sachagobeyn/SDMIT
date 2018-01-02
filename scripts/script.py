@@ -250,6 +250,8 @@ import sys
 import warnings
 warnings.filterwarnings("error")
 
+cwd = os.getcwd()
+
 def read_parameterfile(parameterfile):
 
     """ Get code arguments from the parameterfile
@@ -291,7 +293,13 @@ def read_parameterfile(parameterfile):
         if line[0] in keys:
 
             code_arguments[line[0]] = line[1]
+    
+    if 'scripts' in cwd:
+        
+        for i in ["inputdata","variables","model_parameters","resmap","settings"]:
             
+            code_arguments[i] = os.path.join("..",code_arguments[i])
+
     return code_arguments
 
 def read_settingsfile(settingfile):    

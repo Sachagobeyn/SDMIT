@@ -1,7 +1,7 @@
-inputdata	../inputfile_Baetidae.csv
+inputdata	inputdata_Baetidae.csv
 taxon		Baetidae
-variables	../considered_variables.csv
-resmap		Results
-settings	../settings.txt
-model_parameters ../parameters_Baetidae.csv
-full_output	False
+variables	considered_variables.csv
+resmap		results
+settings	settings.txt
+model_parameters parameters_Baetidae.csv
+full_output	True
