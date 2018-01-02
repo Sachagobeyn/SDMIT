@@ -207,11 +207,9 @@ if __name__ =="__main__":
 
 ### Step 3: Check results
 
-In the results folder one can find three maps, with only optimisation results being usefull. Here, we can find the output files and results for every iteration (0 to number of iterations). In each of these files, we can find the considered variables and their parameter values (embedded feature selection) or in-/exclusion (wrapper feature selection) together with the values for different evaluation measures (CCI, AUC, Kappa, TSS, AIC, BIC, ..). Also a unique ID is found which refers to the model ID. If full_outputin the [code parameter file](parameterfile.txt) is True than we can find the model X in model_runs/X-parameters.csv as also the model run in X-model_run.csv
+In the results folder one can find three maps, with only optimisation results being usefull. Here, we can find the output files and results for every iteration (0 to number of iterations). In each of these files, we can find the considered variables and their parameter values (embedded feature selection) or in-/exclusion (wrapper feature selection) together with the values for different evaluation measures (CCI, AUC, Kappa, TSS, AIC, BIC, ..). Also a unique ID is found which refers to the model ID. If full_output in the [code parameter file](parameterfile.txt) is True than we can find the model X in model_runs/X-parameters.csv as also the model run in X-model_run.csv
 
 For now that is it! I will try to add specific instructions where needed, based on suggestions and comments!
-
-
 
 ## References:
 
