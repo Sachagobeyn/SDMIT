@@ -22,7 +22,7 @@ Requirements (tested with):
 
 Support: Please feel free to open an issue in case of a problem.
 
-What can we do with SDMIT?
+Section 1: What can we do with SDMIT?
 -------------------------
 The species distribution model identification tool is a software tool based on machine learning that aims to train species distribution models with genetic algorithms. The implemented SDM is a habitat suitability model, aiming to define the relation 
 of species response (here presence/absence) as a function of environmental gradients or feature. The genetic algorithm serves as an optimisation method performing:
@@ -81,7 +81,7 @@ To finally determine species occurence one applies a threshold on the HSI (strin
 >2. Select an interference/aggregation (**interference** in *settings.txt*) function to compute SI to HSI (**squaredproduct** or **minimum** or **mean**) in the *settings.txt*
 >3. Select a value for the **threshold** in the *settingsfile.txt*. One can also decide to maximise (**max**) the threshold based on the TSS (i.e. thresholds will vary over the models being optimised).
 
-Now what can we optimise and how?
+Section 2: Now what can we optimise and how?
 ---------------------------------
 As mentioned above, these are a number of mode of actions. First you can choose if you want to do 'wrapper' or 'embedded' feature selection. The difference is quite easy, in the first one relies on the parameter estimation for ![theta](http://mathurl.com/y74s5qu3.png) and does not ask the algorithm to change them to search for a good model. In case of the second, one asks the algorithm to also change the values of these parameters, so to find 'better' or more optimal solutions. In general, one would prefer the second approach, as the feature search can be influenced by the set parameter values. However, if one is very confident about the parameters (with help of expert knowledge), one can decide to use 'wrapper' feature selection. Now, the method implemented to facilitate both ways of model learning is based on genetic algorithms. We will not get into the details of this exaclty works, and go further the practical aspect:
 
@@ -130,6 +130,38 @@ Now about the last two we don't really need to worry, however the first three ar
 4. The (minimum) number of algorithm iteration cycles would then be equal to FE/PS (approximately 360 for N = 50 and FE = 18000).
 
 > Compute an approximate value for the hyper parameters by using the [hyperparameters.py](scripts/hyperparameters.py) function. Set selection rate equal to 0.5, crossover rate equal to 1 in the *settings.txt*.
+
+Section 3: Now let's try to get the code running
+-------------------------------------
+The Python code is developed in a way it can run as an executable by typing in command window 'python ./scripts/script.py parameterfile.txt'. As a consequence, the user interface is run by adapting text or csv file. At first hand this might seem like a bit of a struggle, however, when trying to move towards machine learning and uncertainty analysis on high performance platforms, this is a great advantage.
+
+Step 1: Prepare input files 
+
+1.[input data file](inputdata_Baetidae.csv): a comma delimited file with columns ID, X, Y, date, taxon, abundance, variable and value. A coupled taxon-variable list format is used. X and Y can be the coordinates of the center of a pixel or the exact coordinates of the location. Make sure that the name of taxon and variable are the same in the files [considered variables](considered_variables.csv), [model parameters](parameters_Baetidae.csv)
+
+2.[considered variables file](considered_variables.csv): a comma delimited file with columns variable, consider, name_sim and unit. With the column consider, one can switch (value 1 or 0) variables on/off that we want to consider in the optimisation. The column 'name_sim' should carry the same name for the variables considere in [input data file](inputdata_Baetidae.csv) and [model parameters](parameters_Baetidae.csv) and should contain normal characters (a-z, 1-9, no ',''s).
+
+3.[model parameters file](parameters_Baetidae.csv): a comma delimited file with columns taxon, value (leave blank), type (always continuous), b1 to b4, low, high and a1 to a1. The a1 and a4 are the values for ![theta](http://mathurl.com/y74s5qu3.png) and are an initial estimate by the user. The values for b1 to b4 are boundary values, with b1 and b2 bounding a1 and a2, and b3 and b4 bounding a3 and a4. Make sure the names of the variables match the column variable in [input data file](inputdata_Baetidae.csv) and name_sim in [considered variables file](considered_variables.csv)
+
+4.[settings file](settings.txt): a file delimited by tabs indicating the settings for the model to run. A list of important settings are already reported above and all are summarized below:
+
+
+| tag        | default           | explanation / notes |
+| ------------- |:-------------:| -----:|
+| nan_value      | 100000000000000 | nan value used in computation objective function|
+| multi_objective     | False      | SOO (False) or MOO (True) |
+| objective_function | TSS     |    objective function used to optimise. If multiple objectives are used, then one has to delimit the objectives with a comma (e.g. Sn,Sp) |
+| ncpu      | 1 | number of cpu's used to run algorithm, for all use '-1' 
+| number_of_chromosomes     | -      |   population size, see above (minimum eight) |
+| maximum_runs | -      |    number of iterations |
+| stop_criterion      | - | number of iterations for which not improvement in the objective function has been observed |
+| mutation_rate     | -      | see above, between 0. and 1.   |
+| crossover_rate | 1.0     |    see above, between 0. and 1. |
+| selection_rate      | 0.5 | see above, between 0. and 1. |
+| duplicates     | True     |   only tested for True |
+| mode | variable     |    wrapper feature (binary) or embedded feature (variable) selection |
+| logit      | True | logistic increasing and decreasing function (True) or linear (False) |
+| interference    | squaredproduct      |  interference between SI values from response curves (see Section 1)  |
 
 References:
 -----------
