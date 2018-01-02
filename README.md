@@ -34,7 +34,7 @@ of species response (here presence/absence) as a function of environmental gradi
 
 3. Single or Multi-Objective Optimisation (SOO and MOO): Considering one (simple genetic algorithm) or more objective (non-dominated sorting genetic algorithm II) for the optimisation.
  
-## Section 2: Ok, which SDM are we optimising?
+## Section 2: What kind of SDMs are we optimising?
 
 The species distribution model currently implemented in the package is a simple SDM relating probability of species occurence to habitat suitability:
 
@@ -82,7 +82,7 @@ To finally determine species occurence one applies a threshold on the HSI (strin
 >2. Select an interference/aggregation (**interference** in *settings.txt*) function to compute SI to HSI (**squaredproduct** or **minimum** or **mean**) in the *settings.txt*
 >3. Select a value for the **threshold** in the *settingsfile.txt*. One can also decide to maximise (**max**) the threshold based on the TSS (i.e. thresholds will vary over the models being optimised).
 
-## Section 3: Now what can we optimise and how?
+## Section 3: How can we use this optimisation tool?
 
 As mentioned above, these are a number of mode of actions. First you can choose if you want to do 'wrapper' or 'embedded' feature selection. The difference is quite easy, in the first one relies on the parameter estimation for ![theta](http://mathurl.com/y74s5qu3.png) and does not ask the algorithm to change them to search for a good model. In case of the second, one asks the algorithm to also change the values of these parameters, so to find 'better' or more optimal solutions. In general, one would prefer the second approach, as the feature search can be influenced by the set parameter values. However, if one is very confident about the parameters (with help of expert knowledge), one can decide to use 'wrapper' feature selection. Now, the method implemented to facilitate both ways of model learning is based on genetic algorithms. We will not get into the details of this exaclty works, and go further the practical aspect:
 
@@ -132,7 +132,7 @@ Now about the last two we don't really need to worry, however the first three ar
 
 > Compute an approximate value for the hyper parameters by using the [hyperparameters.py](scripts/hyperparameters.py) function. Set selection rate equal to 0.5, crossover rate equal to 1 in the *settings.txt*.
 
-## Section 4: Now let's try to get the code running
+## Section 4: Let's try to get the code running
 
 The Python code is developed in a way it can run as an executable by typing in command window 'python ./scripts/script.py parameterfile.txt'. As a consequence, the user interface is run by adapting text or csv file. At first hand this might seem like a bit of a struggle, however, when trying to move towards machine learning and uncertainty analysis on high performance platforms, this is a great advantage.
 
