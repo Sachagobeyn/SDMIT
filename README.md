@@ -33,7 +33,7 @@ of species response (here presence/absence) as a function of environmental gradi
 
 3. Single or Multi-Objective Optimisation (SOO and MOO): Considering one (simple genetic algorithm) or more objective (non-dominated sorting genetic algorithm II) for the optimisation.
  
- Ok, which SDM are we optimising? [TO DO!!!]
+Section 2: Ok, which SDM are we optimising?
 ---------------------------------
 The species distribution model currently implemented in the package is a simple SDM relating probability of species occurence to habitat suitability:
 
@@ -81,7 +81,7 @@ To finally determine species occurence one applies a threshold on the HSI (strin
 >2. Select an interference/aggregation (**interference** in *settings.txt*) function to compute SI to HSI (**squaredproduct** or **minimum** or **mean**) in the *settings.txt*
 >3. Select a value for the **threshold** in the *settingsfile.txt*. One can also decide to maximise (**max**) the threshold based on the TSS (i.e. thresholds will vary over the models being optimised).
 
-Section 2: Now what can we optimise and how?
+Section 3: Now what can we optimise and how?
 ---------------------------------
 As mentioned above, these are a number of mode of actions. First you can choose if you want to do 'wrapper' or 'embedded' feature selection. The difference is quite easy, in the first one relies on the parameter estimation for ![theta](http://mathurl.com/y74s5qu3.png) and does not ask the algorithm to change them to search for a good model. In case of the second, one asks the algorithm to also change the values of these parameters, so to find 'better' or more optimal solutions. In general, one would prefer the second approach, as the feature search can be influenced by the set parameter values. However, if one is very confident about the parameters (with help of expert knowledge), one can decide to use 'wrapper' feature selection. Now, the method implemented to facilitate both ways of model learning is based on genetic algorithms. We will not get into the details of this exaclty works, and go further the practical aspect:
 
@@ -131,7 +131,7 @@ Now about the last two we don't really need to worry, however the first three ar
 
 > Compute an approximate value for the hyper parameters by using the [hyperparameters.py](scripts/hyperparameters.py) function. Set selection rate equal to 0.5, crossover rate equal to 1 in the *settings.txt*.
 
-Section 3: Now let's try to get the code running
+Section 4: Now let's try to get the code running
 -------------------------------------
 The Python code is developed in a way it can run as an executable by typing in command window 'python ./scripts/script.py parameterfile.txt'. As a consequence, the user interface is run by adapting text or csv file. At first hand this might seem like a bit of a struggle, however, when trying to move towards machine learning and uncertainty analysis on high performance platforms, this is a great advantage.
 
@@ -146,8 +146,8 @@ Step 1: Prepare input files
 4.[settings file](settings.txt): a file delimited by tabs indicating the settings for the model to run. A list of important settings are already reported above and all are summarized below:
 
 
-| tag        | default           | explanation / notes |
-| ------------- |:-------------:| -----:|
+| tag        | type | default   | explanation / notes |
+| ---|:---:|:---:|
 | nan_value      | 100000000000000 | nan value used in computation objective function|
 | multi_objective     | False      | SOO (False) or MOO (True) |
 | objective_function | TSS     |    objective function used to optimise. If multiple objectives are used, then one has to delimit the objectives with a comma (e.g. Sn,Sp) |
@@ -162,6 +162,8 @@ Step 1: Prepare input files
 | mode | variable     |    wrapper feature (binary) or embedded feature (variable) selection |
 | logit      | True | logistic increasing and decreasing function (True) or linear (False) |
 | interference    | squaredproduct      |  interference between SI values from response curves (see Section 1)  |
+
+5.[code parameter file](parameterfile.txt): a file delimited by tabs linking files together so [code](scripts/script.py) can run in command line. 
 
 References:
 -----------
