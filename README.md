@@ -137,33 +137,42 @@ The Python code is developed in a way it can run as an executable by typing in c
 
 Step 1: Prepare input files 
 
-1.[input data file](inputdata_Baetidae.csv): a comma delimited file with columns ID, X, Y, date, taxon, abundance, variable and value. A coupled taxon-variable list format is used. X and Y can be the coordinates of the center of a pixel or the exact coordinates of the location. Make sure that the name of taxon and variable are the same in the files [considered variables](considered_variables.csv), [model parameters](parameters_Baetidae.csv)
+1. [input data file](inputdata_Baetidae.csv): a comma delimited file with columns ID, X, Y, date, taxon, abundance, variable and value. A coupled taxon-variable list format is used. X and Y can be the coordinates of the center of a pixel or the exact coordinates of the location. Make sure that the name of taxon and variable are the same in the files [considered variables](considered_variables.csv), [model parameters](parameters_Baetidae.csv)
 
-2.[considered variables file](considered_variables.csv): a comma delimited file with columns variable, consider, name_sim and unit. With the column consider, one can switch (value 1 or 0) variables on/off that we want to consider in the optimisation. The column 'name_sim' should carry the same name for the variables considere in [input data file](inputdata_Baetidae.csv) and [model parameters](parameters_Baetidae.csv) and should contain normal characters (a-z, 1-9, no ',''s).
+2. [considered variables file](considered_variables.csv): a comma delimited file with columns variable, consider, name_sim and unit. With the column consider, one can switch (value 1 or 0) variables on/off that we want to consider in the optimisation. The column 'name_sim' should carry the same name for the variables considere in [input data file](inputdata_Baetidae.csv) and [model parameters](parameters_Baetidae.csv) and should contain normal characters (a-z, 1-9, no ',''s).
 
-3.[model parameters file](parameters_Baetidae.csv): a comma delimited file with columns taxon, value (leave blank), type (always continuous), b1 to b4, low, high and a1 to a1. The a1 and a4 are the values for ![theta](http://mathurl.com/y74s5qu3.png) and are an initial estimate by the user. The values for b1 to b4 are boundary values, with b1 and b2 bounding a1 and a2, and b3 and b4 bounding a3 and a4. Make sure the names of the variables match the column variable in [input data file](inputdata_Baetidae.csv) and name_sim in [considered variables file](considered_variables.csv)
+3. [model parameters file](parameters_Baetidae.csv): a comma delimited file with columns taxon, value (leave blank), type (always continuous), b1 to b4, low, high and a1 to a1. The a1 and a4 are the values for ![theta](http://mathurl.com/y74s5qu3.png) and are an initial estimate by the user. The values for b1 to b4 are boundary values, with b1 and b2 bounding a1 and a2, and b3 and b4 bounding a3 and a4. Make sure the names of the variables match the column variable in [input data file](inputdata_Baetidae.csv) and name_sim in [considered variables file](considered_variables.csv)
 
-4.[settings file](settings.txt): a file delimited by tabs indicating the settings for the model to run. A list of important settings are already reported above and all are summarized below:
-
+4. [settings file](settings.txt): a file delimited by tabs indicating the settings for the model to run. A list of important settings are already reported above and all are summarized below:
 
 | tag        | type | default   | explanation / notes |
-| ---|:---:|:---:|
-| nan_value      | 100000000000000 | nan value used in computation objective function|
-| multi_objective     | False      | SOO (False) or MOO (True) |
-| objective_function | TSS     |    objective function used to optimise. If multiple objectives are used, then one has to delimit the objectives with a comma (e.g. Sn,Sp) |
-| ncpu      | 1 | number of cpu's used to run algorithm, for all use '-1' 
-| number_of_chromosomes     | -      |   population size, see above (minimum eight) |
-| maximum_runs | -      |    number of iterations |
-| stop_criterion      | - | number of iterations for which not improvement in the objective function has been observed |
-| mutation_rate     | -      | see above, between 0. and 1.   |
-| crossover_rate | 1.0     |    see above, between 0. and 1. |
-| selection_rate      | 0.5 | see above, between 0. and 1. |
-| duplicates     | True     |   only tested for True |
-| mode | variable     |    wrapper feature (binary) or embedded feature (variable) selection |
-| logit      | True | logistic increasing and decreasing function (True) or linear (False) |
-| interference    | squaredproduct      |  interference between SI values from response curves (see Section 1)  |
+| ---|:---:|:---:|:---:|
+| nan_value   | float  | 100000000000000 | nan value used in computation objective function|
+| multi_objective | boolean    | False      | SOO (False) or MOO (True) |
+| objective_function | float | TSS     |    objective function used to optimise. If multiple objectives are used, then one has to delimit the objectives with a comma (e.g. Sn,Sp) |
+| ncpu   | integer   | 1 | number of cpu's used to run algorithm, for all use '-1' 
+| number_of_chromosomes | integer     | -      |   population size, see above (minimum eight) |
+| maximum_runs | integer | -      |    number of iterations |
+| stop_criterion  | integer    | - | number of iterations for which not improvement in the objective function has been observed |
+| mutation_rate   | float  | -      | see above, between 0. and 1.   |
+| crossover_rate | float | 1.0     |    see above, between 0. and 1. |
+| selection_rate   | float   | 0.5 | see above, between 0. and 1. |
+| duplicates     | boolean | True     |   only tested for True |
+| mode | string | variable     |    wrapper feature (binary) or embedded feature (variable) selection |
+| logit   | boolean   | True | logistic increasing and decreasing function (True) or linear (False) |
+| interference  | string  | squaredproduct      |  interference between SI values from response curves (see Section 1)  |
 
-5.[code parameter file](parameterfile.txt): a file delimited by tabs linking files together so [code](scripts/script.py) can run in command line. 
+5. [code parameter file](parameterfile.txt): a file delimited by tabs linking files together so [code](scripts/script.py) can run in command line. 
+
+| tag        | type | explanation / notes |
+| ---|:---:|:---:|
+| inputdata   | string  | file name of csv containing inputdata |
+| taxon | string     | name of taxon, make sure name is the same as in  [input data file](inputdata_Baetidae.csv) and  [model parameters file](parameters_Baetidae.csv) |
+| variables | string  |   file name of csv containing considered variables for training |
+| resmap   | string   | name of map where results are printed |
+| settings | string      |   file with settings |
+| model_parameters | string  |    file name of csv containing model parameters |
+| full_output  | boolean  | True or False |
 
 References:
 -----------
