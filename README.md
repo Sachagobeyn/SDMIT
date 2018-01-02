@@ -205,7 +205,7 @@ if __name__ =="__main__":
     ```
 ### Step 3: Check results
 
-In the results folder one can find three maps, with only optimisation results being usefull. Here, we can find the output files and results for every iteration (0 to number of iterations). In each of these files, we can find the considered variables and their parameter values (embedded feature selection) or in-/exclusion (wrapper feature selection) together with the values for different evaluation measures (CCI, AUC, Kappa, TSS, AIC, BIC, ..). Also a unique ID is found which refers to the model ID. If full_outputin the [code parameter file](parameterfile.txt) is True than we can find the model in X
+In the results folder one can find three maps, with only optimisation results being usefull. Here, we can find the output files and results for every iteration (0 to number of iterations). In each of these files, we can find the considered variables and their parameter values (embedded feature selection) or in-/exclusion (wrapper feature selection) together with the values for different evaluation measures (CCI, AUC, Kappa, TSS, AIC, BIC, ..). Also a unique ID is found which refers to the model ID. If full_outputin the [code parameter file](parameterfile.txt) is True than we can find the model X in model_runs/X-parameters.csv as also the model run in X-model_run.csv
 
 ## References:
 
@@ -218,3 +218,5 @@ Haupt, R.L., Haupt, S.E., 2004. Algorithms Practical Genetic Algorithms, 2nd ed.
 Mouton, A.M., De Baets, B., Goethals, P.L.M., 2010. Ecological relevance of performance criteria for species distribution models. Ecol. Modell. 221,1995–2002.
 
 Licensed under [ CC BY 4.0 Creative Commons](https://creativecommons.org/licenses/by/4.0/ "CC")
+
+
