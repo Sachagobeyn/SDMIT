@@ -34,7 +34,7 @@ of species response (here presence/absence) as a function of environmental gradi
                                                  
 2. Embedded Feature Selection: Searching for a set of input features and parameter estimates which best describe observed presence/absence patterns.
 
-3. Single or Multi-Objective Optimisation (SOO and MOO): Considering one (simple genetic algorithm) or more objective (non-dominated sorting genetic algorithm II, Deb, 2002) for the optimisation.
+3. Single or Multi-Objective Optimisation (SOO and MOO): Considering one (simple genetic algorithm) or more objective (non-dominated sorting genetic algorithm II, Deb *et al.*, 2002) for the optimisation.
  
 ## Section 2: What kind of SDMs are we optimising?
 
@@ -81,8 +81,8 @@ To finally determine species occurence one applies a threshold on the HSI (strin
 
 >So basically, the implemented species distribution model is a model relating habitat suitability to species occurence by means of a number of species response curves and a HSI threshold. What do we remember for the application of the model in SDMIT?
  >1. Set **logit** to **True** in the [settingsfile](settings.txt) file if you want logistic increasing and decreasing functions describing the suboptimal conditions for SI. If **False** then linear functions will be set.
->2. Select an interference/aggregation (**interference** in [settingsfile](settings.txt))) function to compute SI to HSI (**squaredproduct** or **minimum** or **mean**) in the *settings.txt*
->3. Select a value for the **threshold** in the *settingsfile.txt*. One can also decide to maximise (**max**) the threshold based on the TSS (i.e. thresholds will vary over the models being optimised).
+>2. Select an interference/aggregation (**interference** in [settingsfile](settings.txt)) function to compute SI to HSI (**squaredproduct** or **minimum** or **mean**) in the [settingsfile](settings.txt).
+>3. Select a value for the **threshold** in the [settingsfile](settings.txt). One can also decide to maximise (**max**) the threshold based on the TSS (i.e. thresholds will vary over the models being optimised).
 
 ## Section 3: How can we use this optimisation tool?
 
@@ -109,8 +109,8 @@ with:
 So we can decide to maximise on TSS (single objective optimisation) or we could also optimise on both. Now, how would the latter work? It would mean we would have to optimise two criteria; the correct estimation of species presence, on the one hand, and species absence, on the other. However, the objective of optimising the two measures can be conflicting: SDMs that estimate species presence prefectly fail to estimate absence well and vice versa. Now, to identify this trade-off between objectives, specific algorithms are developed some time ago. Here, we use the non-dominated sort genetic algorithm II (NSGA-II) to identify the trade-off between Sn and Sp. Also here, the indication whether we want to choose for SOO or MOO are in the *setting.txt* file.
 
 
->1. If you want to do SOO, go to the *settings.txt* file and set **multi_objective** to False. Otherwise (MOO) set it to True.
->2. Choose you objective function **objective_function** in the *settings.txt* file, for SOO, this can be the TSS, Kappa, AUC, AIC, BIC or CCI (see Mouton *et al.*, 2010 for formulation). For MOO, one has to define multiple objectives and delimit them with a comma (e.g. 'Sn,Sp'). The current impementation has been tested for two objectives, but in practice should also work for three to four objectives.
+>1. If you want to do SOO, go to the [settingsfile](settings.txt) and set **multi_objective** to False. Otherwise (MOO) set it to True.
+>2. Choose you objective function **objective_function** in the [settingsfile](settings.txt), for SOO, this can be the TSS, Kappa, AUC, AIC, BIC or CCI (see Mouton *et al.* (2010) for formulation). For MOO, one has to define multiple objectives and delimit them with a comma (e.g. 'Sn,Sp'). The current impementation has been tested for two objectives, but in practice should also work for three to four objectives.
 
 Finally, there are a number of settings we need to define before we start the algorithm. Now, we could just use standard values for these 'hyper parameters', however, depending on how much time you have, you might want to tune these a bit, since one could end up with non-satisfying results when stopping the search algorithm to soon. Basically, we need to calculate a few things:
 
