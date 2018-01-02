@@ -23,6 +23,8 @@ Note: Should run cross OS
 
 Support: Please feel free to open an issue in case of a problem.
 
+Licensed under [ CC BY 4.0 Creative Commons](https://creativecommons.org/licenses/by/4.0/ "CC")
+
 ## Section 1: What can we do with SDMIT?
 
 The species distribution model identification tool is a software tool based on machine learning that aims to train species distribution models with genetic algorithms. The implemented SDM is a habitat suitability model, aiming to define the relation 
@@ -32,7 +34,7 @@ of species response (here presence/absence) as a function of environmental gradi
                                                  
 2. Embedded Feature Selection: Searching for a set of input features and parameter estimates which best describe observed presence/absence patterns.
 
-3. Single or Multi-Objective Optimisation (SOO and MOO): Considering one (simple genetic algorithm) or more objective (non-dominated sorting genetic algorithm II) for the optimisation.
+3. Single or Multi-Objective Optimisation (SOO and MOO): Considering one (simple genetic algorithm) or more objective (non-dominated sorting genetic algorithm II, Deb, 2002) for the optimisation.
  
 ## Section 2: What kind of SDMs are we optimising?
 
@@ -52,7 +54,7 @@ and x, the input data for a number of features. The relation between SI and x is
 
 ![fig1](docs/example-response_1.png)
 
-In the encoding of the algorithm (see *settings.txt*), this logistic increasing and decreasing functions before and after the optimal range is indicated with the boolean **logit**. Turn logit of and we get linear curves. In mathematical terms the logit function is described by:
+In the encoding of the algorithm (see [settingsfile](settings.txt)), this logistic increasing and decreasing functions before and after the optimal range is indicated with the boolean **logit**. Turn logit of and we get linear curves. In mathematical terms the logit function is described by:
 
 ![SI](http://mathurl.com/ycttr8xu.png)
 
@@ -60,7 +62,7 @@ with
 
 ![p](http://mathurl.com/yc4m8bex.png)
 
-Now the values of ![theta](http://mathurl.com/y74s5qu3.png) representing the optimal and optimal range (see two example figures above). Now the values of SI for different features have to be combined to one HSI value and this can be done by choosing different aggregation functions (see string **interference** in *settings.txt*). For one you could take the minimum (**minimum**) ...
+Now the values of ![theta](http://mathurl.com/y74s5qu3.png) representing the optimal and optimal range (see two example figures above). Now the values of SI for different features have to be combined to one HSI value and this can be done by choosing different aggregation functions (see string **interference** in [settingsfile](settings.txt)). For one you could take the minimum (**minimum**) ...
 
 ![min](http://mathurl.com/yavq2h89.png)
 
@@ -72,14 +74,14 @@ Now the values of ![theta](http://mathurl.com/y74s5qu3.png) representing the opt
 
 ![gm](http://mathurl.com/ycfp2r8e.png)
 
-To finally determine species occurence one applies a threshold on the HSI (string or float **threshold** in *settings.txt*):
+To finally determine species occurence one applies a threshold on the HSI (string or float **threshold** in [settingsfile](settings.txt)):
 
 ![HSIthreshold](http://mathurl.com/yb4dhlkh.png)
 
 
 >So basically, the implemented species distribution model is a model relating habitat suitability to species occurence by means of a number of species response curves and a HSI threshold. What do we remember for the application of the model in SDMIT?
- >1. Set **logit** to **True** in the *settings.txt* file if you want logistic increasing and decreasing functions describing the suboptimal conditions for SI. If **False** then linear functions will be set.
->2. Select an interference/aggregation (**interference** in *settings.txt*) function to compute SI to HSI (**squaredproduct** or **minimum** or **mean**) in the *settings.txt*
+ >1. Set **logit** to **True** in the [settingsfile](settings.txt) file if you want logistic increasing and decreasing functions describing the suboptimal conditions for SI. If **False** then linear functions will be set.
+>2. Select an interference/aggregation (**interference** in [settingsfile](settings.txt))) function to compute SI to HSI (**squaredproduct** or **minimum** or **mean**) in the *settings.txt*
 >3. Select a value for the **threshold** in the *settingsfile.txt*. One can also decide to maximise (**max**) the threshold based on the TSS (i.e. thresholds will vary over the models being optimised).
 
 ## Section 3: How can we use this optimisation tool?
@@ -87,7 +89,7 @@ To finally determine species occurence one applies a threshold on the HSI (strin
 As mentioned above, these are a number of mode of actions. First you can choose if you want to do 'wrapper' or 'embedded' feature selection. The difference is quite easy, in the first one relies on the parameter estimation for ![theta](http://mathurl.com/y74s5qu3.png) and does not ask the algorithm to change them to search for a good model. In case of the second, one asks the algorithm to also change the values of these parameters, so to find 'better' or more optimal solutions. In general, one would prefer the second approach, as the feature search can be influenced by the set parameter values. However, if one is very confident about the parameters (with help of expert knowledge), one can decide to use 'wrapper' feature selection. Now, the method implemented to facilitate both ways of model learning is based on genetic algorithms. We will not get into the details of this exaclty works, and go further the practical aspect:
 
 
->Choose in the *settings.txt* the **mode** (string)
+>Choose in the [settingsfile](settings.txt) the **mode** (string)
 >1. **variable**: Embedded feature selection
 >2. **binary**: Wrapper feature selection
 >That was easy, no?
@@ -118,7 +120,7 @@ Finally, there are a number of settings we need to define before we start the al
 4. The selection rate, determining how much solutions of an algorithm iteration cycle are copy-pasted to the next cyle, which we typically set to 0.5.
 5. The crossover rate pc, determining how the solutions are 'combined' to new solutions (compare it with the concept of inheritance  from parents to offspring) which we can set to 1.
 
-Now about the last two we don't really need to worry, however the first three are quite important since they interact with each other. Luckily, a smart guy, Matthew Gibbs came up with some guidelines to determine these three hyper parameters and it turns out that they work quite well. During my research, I did a number of tests and found them to work well. The guidelines:
+Now about the last two we don't really need to worry, however the first three are quite important since they interact with each other. Luckily, a smart guy, Matthew Gibbs came up with some guidelines to determine these three hyper parameters (Gibbs *et al.*, 2008) and it turns out that they work quite well. During my research, I did a number of tests and found them to work well. The guidelines:
 
 1. Determine how much time you want the algorithm to run. You can calculate this with how long a fitness evaluation (a single SDM run) takes (for instance 0.1 second) and the time you have available (30 minutes = 1800 seconds), i.e. determine function evaluations by dividing the computer time available by the average time to compute the fitness function. Thus function evaluation is then - in this example - equal to 18000.
 
@@ -207,18 +209,14 @@ if __name__ =="__main__":
 
 In the results folder one can find three maps, with only optimisation results being usefull. Here, we can find the output files and results for every iteration (0 to number of iterations). In each of these files, we can find the considered variables and their parameter values (embedded feature selection) or in-/exclusion (wrapper feature selection) together with the values for different evaluation measures (CCI, AUC, Kappa, TSS, AIC, BIC, ..). Also a unique ID is found which refers to the model ID. If full_outputin the [code parameter file](parameterfile.txt) is True than we can find the model X in model_runs/X-parameters.csv as also the model run in X-model_run.csv
 
-For now that is it! I will try to add specific instructions where needed, also based on suggestions and comments!
+For now that is it! I will try to add specific instructions where needed, based on suggestions and comments!
+
+
 
 ## References:
 
-Deb, K., Pratap, A., Agarwal, S., Meyarivan, T., 2002. A fast and elitist multiobjective genetic algorithm: NSGA-II. IEEE Trans. Evol. Comput. 6, 182–197.
+Deb, K., Pratap, A., Agarwal, S., Meyarivan, T., 2002. A fast and elitist multiobjective genetic algorithm: NSGA-II. IEEE Transactions on Evolutionary Computation 6, 182–197.
 
-Gibbs, M.S., Dandy, G.C., Maier, H.R., 2008. A genetic algorithm calibration method based on convergence due to genetic drift. Inf. Sci. (Ny). 178, 2857–2869.
+Gibbs, M.S., Dandy, G.C., Maier, H.R., 2008. A genetic algorithm calibration method based on convergence due to genetic drift. Information Sciences 178, 2857–2869.
 
-Haupt, R.L., Haupt, S.E., 2004. Algorithms Practical Genetic Algorithms, 2nd ed. John Wiley & Sons, Inc., Hoboken.
-
-Mouton, A.M., De Baets, B., Goethals, P.L.M., 2010. Ecological relevance of performance criteria for species distribution models. Ecol. Modell. 221,1995–2002.
-
-Licensed under [ CC BY 4.0 Creative Commons](https://creativecommons.org/licenses/by/4.0/ "CC")
-
-
+Mouton, A.M., De Baets, B., Goethals, P.L.M., 2010. Ecological relevance of performance criteria for species distribution models. Ecological Modelling 221, 1995–2002.
