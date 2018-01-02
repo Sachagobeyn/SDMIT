@@ -3,8 +3,8 @@ multi_objective False
 objective_function TSS
 ncpu	1
 number_of_chromosomes 50
-maximum_runs 200	
-stop_criteria 200
+maximum_runs 1	
+stop_criteria 1
 mutation_rate 0.10
 crossover_rate 1.0
 selection_rate 0.5

@@ -1,243 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Oct  8 16:34:52 2015
-Description:  
+Description: see https://github.com/Sachagobeyn/SDMIT/ or https://github.com/Sachagobeyn/SDMIT/releases/
 @author: sacha gobeyn (sacha.gobeyn@ugent.be or sachagobeyn@gmail.com)
-"""
-""" 
-------------
-INTRODUCTION
------------- 
-The species distribution model identification tool is a software tool that aims 
-to identify (optimise) species distribution models with genetic algorithms. The
-implemented SDM is a habitat suitability model, aiming to define the relation 
-of species response (here presence/absence) as a function of environmental 
-gradients. The genetic algorithm serves as an optimisation method performing:
-    
-    (1) Input variable selection: Searching for a set of near-optimal input 
-                                  parameters which best describe observed pres-
-                                  ence/absence patterns (parameters of species
-                                  response curves have to be defined a priori).
-                                  
-    (2) Parameter estimation (PE):  Searching for a set of near-optimal species 
-                                    response parameters which best describe 
-                                    observed presence/absence patterns.
-                                    
-    (3) Model identification (MI): Combination of (1) and (2)
-
-The species response curves are defined by trapezoid curves or logit implemen-
-tations (logit).
-
-The genetic algorithm encoding has different implemententations for (1), (2) 
-    and (3):
-    
-    (1) Binary: a string of 0 and 1s with a length equal to the  number of 
-                    cosidered input variables.
-    (2) Continuous: a string of real-values (Haupt and Haupt, 2004) bounded by 
-                        predefined boundaries b. Length is equal to the number 
-                        of input variables multiplied by 4.
-    (3) List of list:   a list of list with real-values bounded by predefined 
-                        boundaries b. The first order list is a binary string,
-                        whereas a second order continuous string is defined 
-                        when a "1" is defined in the first order list. IVS is 
-                        encoded in the first order list, PE in the second order
-
-Single objective or multi-objective optimisation is possible, for single object-
-ive optimisation True Skill Statistic, Kappa, Sum of Squared Errors, .. can be 
-used. For definition of these measures see Mouton et al. (2010). Multi-objecti-
-ve optimisation is also feasable, by searching for a Pareto frontier with a non
--dominated sorting genetic algorithme approach (Deb, 2002). Any of the imple-
-mented objective can be used.
-
-For implementation of the genetic operators: see
-    ADD
-
-For settings of values for hyper parameters, one is advised to follow Gibbs et
-    al. (2008) as they where found to be near-optimal.
-        
-        (1) Determine function evaluations by dividing the computer time 
-            available by the average time to compute the fitness function
-        (2) Solve equation 1.1 to determine the number of chromosomes:
-                
-            FE/N log (1-1/N) = -M-log(sqrt(l/12))           equation 1.1
-            
-            with M = 3 and l = (maximum) length of chromosomes
-            for variable length encoding = compute maximum length
-            
-        (3) Compute mutation rate by dividing 5 by number of chromosomes
-        (4) Use elist approach and set crossover rate to 1
-            (selection rate = 0.5)
-
-References:
------------
-Deb, K., Pratap, A., Agarwal, S., Meyarivan, T., 2002. A fast and elitist multi-
-    objective genetic algorithm: NSGA-II. IEEE Trans. Evol. Comput. 6, 182–197.
-Gibbs, M.S., Dandy, G.C., Maier, H.R., 2008. A genetic algorithm calibration 
-    method based on convergence due to genetic drift. Inf. Sci. (Ny). 
-    178, 2857–2869.
-Haupt, R.L., Haupt, S.E., 2004. Algorithms Practical Genetic Algorithms, 2nd 
-    ed. John Wiley & Sons, Inc., Hoboken.
-Mouton, A.M., De Baets, B., Goethals, P.L.M., 2010. Ecological relevance of 
-    performance criteria for species distribution models. Ecol. Modell. 221, 
-    1995–2002.
-   
-
-------------
-INSTRUCTIONS
------------- 
-
-      SDM optimisation is run by running 'script.py' in Python 
-      OR in command line 'python script.py -flags'
-      
-      Implemented for batch simulations
-      
-      The "parameterfile.txt"-file defines  the input for the code whereas the 
-      "settings.txt"-file specify the settings for the model and genetic algorithm
-      
-      -----------------
-      parameterfile.txt
-      -----------------
-      
-      inpudata [STRING]     .csv file with inputdata 
-                            (col: [ID,X,Y,taxon,date,abundance,value,variable])
-
-      taxon [STRING]        name of taxon to develop and optimise model
-                            (make sure name is in column 'taxon' in inputdata)  
- 
-      variables [STRING]    .csv file with variables to consider in model
-                            (col: [variable,consider,name_sim], name_sim are 
-                            the variables checked in inputdata, beware captions,
-                            special characters, ..)
-                            
-      model_parameters [STRING]  .csv file with parameters of species response 
-                                  curves
-                            
-      resmap [STRING]       name of map to print results
- 
-      settings [STRING]     name of file containing options for genetic algo-
-                            rithm and SDM.
-                            
-      full_ouput [True OR   True or False
-                  False]
-
-      ------------
-      inpudata.csv
-      ------------
-      list with columns (ID,taxon,abundance,variable,value)
-      
-      ID [INT]              unique ID of point
-      
-      X [FLOAT]             X coordinate of point, can include nans
-      
-      Y [FLOAT]             Y coordinate of point, can include nans
-              
-      date [~]              date, can include nans
-          
-      taxon [STRING]        name of observed taxon
-      
-      abundance [INT        presence/absence or abundance of taxon
-                 OR FLOAT]
-      
-      variable  [STRING]    name of measured variable (names must be compatible
-                            with name_sim in variables file in parameterfile.txt)
-      
-      value [FLOAT]         value of the environmental variable
-            
-      -------------
-      variables.csv
-      -------------
-      list with columns (variable,consider,name_sim)
-      
-      name_sim [STRING]     name of variable in model (names must be compatible
-                            inputdata.csv)
-      
-      variables [STRING]    synonym or explanation of variable
-      
-      consider [BINARY]     consider variable in optimisation
-
-      -------------
-      model_parameters.csv
-      -------------
-      list with columns (taxon,value,type,b1->b4,low,high,a1->a4,variable)
-      
-      variable [STRING]     name of variable in model (names must be compatible
-                            inputdata.csv)
-      
-      taxon [STRING]        name of observed taxon
-
-      a1 [FLOAT]            lower boundary of range (SI!=0) of species response 
-                            curve, bounded by [low,b2]
-      
-      a2 [FLOAT]            lower boundary of optimal range (SI = 1) of species 
-                            response curve, bounded by [b1,b3]
-
-      a3 [FLOAT]            upper boundary of optimal range (SI = 1) of species 
-                            response curve, bounded by [b2,b4]
-
-      a4  [FLOAT]           upper boundary of range (SI != 0) of species resp-
-                            ponse curve, bounded by [b3,high]
-      
-      low, high, b0, b1,    boundaries for a (the boundaries b are adjusted                                      
-      b2, b3 and b4         dynamicaly when best solution in genetic algorithm
-      [FLOAT]               goes out of bound)
-      
-      --------------
-      settings.txt
-      --------------
-      
-      nan_value [FLOAT]             value for nan's in optimisation 
-                                    (default: 100000)
-      
-      number_of_chromosomes [INT]   number of chromosomes to run GA
-                                    (default: 100)
-    
-      selection_rate [FLOAT]        selection rate of population per generation
-                                    (default: 0.5 -> 50%)
-                                    
-      crossover_rate [FLOAT]        crossover rate of population
-                                    (default: 1. -> 100%)
-      
-      mutation_rate [FLOAT]         mutation rate of genes in chromosomes
-                                    (default: 0.05 -> 5%)
-      
-      multi_objective [True         'True' or 'False'
-                      OR False]     (default: 'False')
-     
-      objective_function [STRING]   the objective function to minimize
-                                    (default: TSS)
-     
-      maximum_runs [INT]            maximum number of generations to calculate
-                                    (default: 200)
-                                         
-      ncpu [INT]                    number of cpu's to use on machine 
-                                    (-1 = all)
-     
-      mode [STRING]                 'binary' (IVS), 'continuous' (PE), variable
-                                    (MI) (default: MI)
-
-      full_output [True 
-                  OR False]         print all outputs of every chromosoom
-                                    (default: 'False')
-     
-    
-      ------
-      flags (use by running command line python script.py -flags)
-      ------
-      
-      -i                            name of inputdata file
-      
-      -v                            name of variables file
-      
-      -t                            name of the taxon
-    
-      -res                          name of directory to write output
-      
-      -fp                           parameters of SDM model (species response 
-                                     curves)
-      -set                          settingsfile
-      
-      -logit                        True or False
-      
 """
 
 import pandas as pd
@@ -254,7 +19,7 @@ cwd = os.getcwd()
 
 def read_parameterfile(parameterfile):
 
-    """ Get code arguments from the parameterfile
+    """ get code arguments from the parameterfile
     
     Parameters
     ----------        
@@ -265,13 +30,10 @@ def read_parameterfile(parameterfile):
     'code_arguments' (dictionary):
         
             'inputdata' (str): name of inputdata 
-            NOTE: structure inputdata should be conform Section XX tutorial
             'variables' (str): name of variables
-            NOTE: structure variables should be conform Section XX tutorial
             'taxon' (str): name of the taxon
             'resmap' (str): name of directory to write output
             'model_parameters' (str): name of model_parameters
-             NOTE: structure variables should be conform Section XX tutorial           
             'full_output' (bool): write out all model runs
             'logit' (bool): use logistic increasing and decreasing function to
                             describe species response
@@ -303,7 +65,7 @@ def read_parameterfile(parameterfile):
     return code_arguments
 
 def read_settingsfile(settingfile):    
-    """ Get algorithm parameters for model development and optimisation from parameterfile
+    """ get optimisation settings from parameterfile
     
     Parameters
     ----------  
@@ -321,7 +83,7 @@ def read_settingsfile(settingfile):
     return settings
     
 def default_settings():
-    """ Define default settings for optimisation
+    """ define settings for optimisation
     
     Parameters
     ----------  
@@ -329,7 +91,7 @@ def default_settings():
     
     Returns
     -------
-       'settings' (dictionary): default settings for the genetic algorithm 
+       'settings' (dictionary): default settings for running optimisation
        
     """
      
@@ -371,10 +133,17 @@ def default_settings():
     return settings
    
 def default_settings_structure(settings):
-    """ Define default settings for species distribution model
+    """ define default settings for optimisation
     
-    Arguments:
+    Parameters
+    ----------  
+        'settings' (dictionary): default settings for the genetic algorithm 
+    
+    Returns
+    -------
        'settings' (dictionary): default settings for the genetic algorithm 
+                                updated with default SDM settings
+       
     """
      
     
@@ -386,6 +155,18 @@ def default_settings_structure(settings):
     return settings
 
 def check_settings(settings):
+ 
+    """ check settings for optimisation
+    
+    Parameters
+    ----------  
+        'settings' (dictionary): default settings for optimisation
+    
+    Returns
+    -------
+       none
+       
+    """
     
     if (settings["multi_objective"]==True) and (type(settings["objective_function"])==str):
           
@@ -398,15 +179,16 @@ def check_settings(settings):
           sys.exit("="*19)   
 
 def read_file(setting_file,settings):
-    """ 
-    Read settingsfile
+    """ read settingsfile line by line
     
-    Arguments:
-        'setting_file' (str): name of the setting file
-        'filetype' (str): either model development (md) or optimisation (ga)
-    Returns:
-        'settings' (dictionary)
-    """
+    Parameters
+    ----------  
+        'setting_file' (string): name settingsfile
+    
+    Returns
+    -------
+         'settings' (dictionary): settings for optimisation   
+    """    
     
     "Read lines"
     with open(setting_file) as f: 
@@ -435,29 +217,18 @@ def read_file(setting_file,settings):
     return settings
 
 def overwrite_arguments(arguments):
-    """ 
-    Overwrite the arguments found in the parameter file by the system arguments
+    """ overwrite parameterfile arguments with system arguments (flags)
     
-    Arguments:
-        'arguments' (dictionary):
+    Parameters
+    ----------  
+        'arguments' (dictionary): parameter file arguments
+    
+    Returns
+    -------
+        'arguments' (dictionary): updated parameter file arguments
+        NOTE: flags are identifiers recognised by the system by a dash (-)
+    """    
         
-            'inputdata' (str): name of inputdata file
-            'variables' (str): name of variables file
-            'taxon' (str): name of the taxon
-            'resmap' (str): name of directory to write output
-            
-    Returns:
-        'code_arguments' (dictionary):
-        
-            'inputdata' (str): name of inputdata 
-            NOTE: structure inputdata should be conform Section XX tutorial
-            'variables' (str): name of variables
-            NOTE: structure variables should be conform Section XX tutorial
-            'taxon' (str): name of the taxon
-            'resmap' (str): name of directory to write output
-    
-    """
-    
     flags = {}
     flags["i"] = "inputdata"
     flags["t"] = "taxon"
@@ -480,28 +251,17 @@ def overwrite_arguments(arguments):
     return arguments
  
 def overwrite_settings(settings):
-    """ 
-    Overwrite the settings found in the settingsfile file by the system arguments
+    """ overwrite settings with system arguments (flags)
     
-    Arguments:
-        'arguments' (dictionary):
-        
-            'inputdata' (str): name of inputdata file
-            'variables' (str): name of variables file
-            'taxon' (str): name of the taxon
-            'resmap' (str): name of directory to write output
-            
-    Returns:
-        'code_arguments' (dictionary):
-        
-            'inputdata' (str): name of inputdata 
-            NOTE: structure inputdata should be conform Section XX tutorial
-            'variables' (str): name of variables
-            NOTE: structure variables should be conform Section XX tutorial
-            'taxon' (str): name of the taxon
-            'resmap' (str): name of directory to write output
+    Parameters
+    ----------  
+        'settings' (dictionary): settings for optimisation 
     
-    """
+    Returns
+    -------
+        'settings' (dictionary): updated settings for optimisation 
+        NOTE: flags are identifiers recognised by the system by a dash (-)
+    """  
     
     flags = {}
     flags["adaptive"] = "adaptive"
@@ -525,20 +285,21 @@ def overwrite_settings(settings):
     return settings
 
 def run(inputdata,taxon,variables,model_parameters,resmap,settings,full_output=False):
+    """ overwrite settings with system arguments (flags)
     
-    """ 
-    Run script for model development and optimisation
-    
-    Arguments:
-        'inputdata' (str): name of inputdatafile 
+    Parameters
+    ----------   
+        'inputdata' (pandas df): input data
         'taxon' (str): name of taxon
-        'variables' (str): name of variablesfile
-        'resmap' (str): name of map to write output
-        'model_setting' (dictionary): settings for model development
-        'ga_setting' (dictionary): settings for optimisation (with genetic algorithm)
-    
-    Returns:
-
+        'variables' (pandas df): considered variables 
+        'model_parameters' (str): model parameters for species response curves        
+        'resmap' (str): name of directory to write output
+        'settings' (dictionary): settings for optimisation         
+        'full_output' (bool): write out all model runs
+        
+    Returns
+    -------
+        none        
     """
     
     "Create output map"
@@ -558,10 +319,22 @@ def run(inputdata,taxon,variables,model_parameters,resmap,settings,full_output=F
     print_performance(performance,resmap)
 
     "Print models"
-    print_models(inputdata,model_parameters,taxon,settings["interference"],settings,chromosomes,resmap)
+    print_models(inputdata,model_parameters,taxon,settings,chromosomes,resmap)
 
 def check_input_code(inputdata,taxon,model_parameters,variables):
+    """ check for input arguments to optimisation function
     
+    Parameters
+    ----------   
+        'inputdata' (pandas df): input data
+        'taxon' (str): name of taxon
+        'model_parameters' (str): model parameters for species response curves        
+        'variables' (pandas df): considered variables 
+        
+    Returns
+    -------
+        none        
+    """    
     cond = False
     
     error = []
@@ -594,24 +367,25 @@ def check_input_code(inputdata,taxon,model_parameters,variables):
         sys.exit("="*19) 
   
 def optimisation(inputdata,taxon,model_parameters,variables,settings,resmap,full_output=False):
-
-    """ 
-    Function to run model and optimise the developed model.
+    """ main function to initialise optimisation 
     
-    Arguments:
-        'inputdata' (pandas df): Biological and environmental measurements
-                            columns: ["sample","ID","taxon","abundance","variable","value",optional="development"]  
-        'parameters' (pandas df): Estimated parameters for habitat preference curves
-                            columns: ["taxon","a1","a2","a3","a4","type"]        
+    Parameters
+    ----------   
+        'inputdata' (pandas df): input data
         'taxon' (str): name of taxon
-        'variables' (pandas df): Lists of considered variables
-                            columns: ["variable","consider"]
-        'ga_setting' (dictionary): settings for optimisation (with genetic algorithm)                            
-        'resmap' (str): name of map to write output
-    
-    Returns:
-
-    """
+        'model_parameters' (str): model parameters for species response curves        
+        'variables' (pandas df): considered variables 
+         'resmap' (str): name of directory to write output
+        'settings' (dictionary): settings for optimisation         
+        'full_output' (bool): write out all model runs
+        
+    Returns
+    -------
+        'performance' (dictionary): values for evaluation measures, number of 
+        data samples, threshold
+        'solution' (list): GA.chromosome objects of last iteration, each 
+        containing fitness and model parameters
+    """    
   
     "Prepare inputs to run model and run the filter model"
     model_inputs = {}
@@ -637,14 +411,38 @@ def optimisation(inputdata,taxon,model_parameters,variables,settings,resmap,full
     check_input_code(inputdata,taxon,model_parameters,variables)
     
     from GA import GA    
-    performance,solution = GA("translate_chromosome2model",model_inputs,boundaries,settings,resmap,full_output=full_output)
+    performance,solution = GA("compute_fitness",model_inputs,boundaries,settings,resmap,full_output=full_output)
     
     return performance,solution
     
-def translate_chromosome2model(model_inputs,boundaries,chromosoom,mode,nan_value,resmap,full_output,final_run=False):
+def compute_fitness(model_inputs,boundaries,chromosome,mode,nan_value,resmap,full_output,final_run=False):
+    """ function which computes fitness
+    
+    Parameters
+    ----------   
+        'model_inputs' (dictionary):  contains inputdata, interference flag, 
+        logit flag, model parameters for species response curves, threshold flag,
+        number of input variables K
+        'boundaries' (pandas df): dataframe containing model boundary conditions 
+        for specific taxon (format: model_parameters df)
+        'chromosome' (GA.chromosome object): object containing fitness and candidate 
+        model parameters
+        'mode' (string): 'variable' (embedded) or 'binary' (wrapper) feature
+        selection
+        'nan_value' (float): nan value for computation
+        'resmap' (string): path to results map
+        'full_output' (boolean)
+        'final_run': flag for indicating if iteration is last cycle
+        
+    Returns
+    -------
+        'performance' (dictionary): values for evaluation measures, number of 
+        data samples, threshold
+        'parameters' (pandas df): parameters for species response curve
+    """    
 
     "Step 1: Extract variables which are included in model"
-    variables = chromosoom.parameters["variable"][~(chromosoom.parameters["sample"]==0)].tolist()
+    variables = chromosome.parameters["variable"][~(chromosome.parameters["sample"]==0)].tolist()
     
     "Step 2: Extract initial guess for parameters"
     parameters = model_inputs["parameters"][model_inputs["parameters"]["variable"].isin(variables)]
@@ -657,10 +455,10 @@ def translate_chromosome2model(model_inputs,boundaries,chromosoom,mode,nan_value
     if len(variables)!=0:
         
         "Step 3a: Transform chromosome encoding to model parameters"
-        inputs["parameters"],inputs["K"] = translate_chromosome(deepcopy(parameters),chromosoom,mode)
+        inputs["parameters"],inputs["K"] = translate_chromosome(deepcopy(parameters),chromosome,mode)
         
         "Step 3b: Run the model"
-        performance = run_filter_model(inputs,resmap,chromosoom.ID,full_output=full_output)
+        performance = run_model(inputs,resmap,chromosome.ID,full_output=full_output)
         
     else:
         performance = {c:nan_value if (c=="AIC") or (c=="SSE") or (c=="BIC") else -nan_value for c in ["AIC","N","K","SSE","AUC","Kappa","CCI","Sp","Sn","TSS","threshold","BIC"]}
@@ -671,17 +469,32 @@ def translate_chromosome2model(model_inputs,boundaries,chromosoom,mode,nan_value
 
     "Step 4: Print the model if required"
     if full_output==True:
-        parameters.to_csv(os.path.join(resmap,str(int(chromosoom.ID))+"-parameters.csv"))
+        parameters.to_csv(os.path.join(resmap,str(int(chromosome.ID))+"-parameters.csv"))
     
     return performance,parameters
 
-def translate_chromosome(parameters,chromosoom,mode):
+def translate_chromosome(parameters,chromosome,mode):
+    """ function which translates genotype encoded in chromosome to model with species response curve parameters
     
+    Parameters
+    ----------   
+        'parameters' (pandas df): initial parameters for species response curve
+        'chromosome' (GA.chromosome object): object containing fitness and model 
+        parameters
+        'mode' (string): 'variable' (embedded) or 'binary' (wrapper) feature
+        selection
+        
+    Returns
+    -------
+        'parameters' (pandas df): candidate parameters for species response curve
+        extracted from chromosome
+        'K': number of input variables K
+    """      
     K=0
                 
     if mode=="binary":
 
-        un_var = chromosoom.parameters["variable"][chromosoom.parameters["sample"]==1].tolist()
+        un_var = chromosome.parameters["variable"][chromosome.parameters["sample"]==1].tolist()
 
         parameters =  parameters[parameters["variable"].isin(un_var)]
         
@@ -697,7 +510,7 @@ def translate_chromosome(parameters,chromosoom,mode):
      
         
         un_var = parameters["variable"].unique().tolist()
-        chromosoompar = chromosoom.parameters
+        chromosoompar = chromosome.parameters
         
         for i in un_var:
             
@@ -705,7 +518,7 @@ def translate_chromosome(parameters,chromosoom,mode):
             cond_chr = chromosoompar["variable"]==i
             string = chromosoompar["sample"][cond_chr].values[0]
             
-            "discrete/acute"
+            "categorical/continuous"
             if parameters["type"][cond_par].iloc[0]=="categorical":
                 string =  string.returnString()
                 parameters.loc[cond_par,["a"+str(i) for i in range(1,len(string)+1,1)]] = string
@@ -715,54 +528,24 @@ def translate_chromosome(parameters,chromosoom,mode):
                 K += 4
                              
     return parameters,K
-    
-def initiate_continues(model_inputs,parameters,type_filter="acute"):
-
-    abiotic_filters = parameters["variable"][parameters["type"]==type_filter].tolist()
-    boundaries = pd.DataFrame(data=np.zeros([len(abiotic_filters)*2,1]),columns=["parameter"])
-    boundaries["parameter"] = [i+"_"+["a2","a3"][j] for i in abiotic_filters for j in range(2)]
-    boundaries["sample"]=[parameters[i.split("_")[1]][parameters["variable"]==i.split("_")[0]].values[0] for i in boundaries["parameter"].unique()]
-    boundaries["down_cond"]=[('boundaries["sample"][boundaries["parameter"]=="'+str(i.replace("a3","a2")) +'"].values[0]') if ("a3" in i) else (str(parameters["a1"][parameters["variable"]==i.split("_")[0]].values[0])) for i in boundaries["parameter"].unique()] 
-    boundaries["up_cond"]=[('boundaries["smaxample"][boundaries["parameter"]=="'+str(i.replace("a2","a3")) +'"].values[0]') if ("a2" in i) else (str(parameters["a4"][parameters["variable"]==i.split("_")[0]].values[0])) for i in boundaries["parameter"].unique()]
-    boundaries["range"] = [parameters["a3"][parameters["variable"]==i.split("_")[0]].values[0]-parameters["a2"][parameters["variable"]==i.split("_")[0]].values[0] for i in boundaries["parameter"].unique()] 
-    boundaries["C"] = 1
-    
-    return boundaries
-    
-def initiate_discrete(model_inputs,parameters,type_filter="discrete"):
-    
-    boundaries = deepcopy(parameters[["variable","value","a1"]][parameters["type"]==type_filter])
-    boundaries["parameter"] = boundaries["variable"]+"_"+boundaries["value"]
-    boundaries["sample"] = boundaries["a1"]
-    boundaries["down_cond"] = "0"
-    boundaries["up_cond"] = "1"
-    boundaries["range"] = 1
-    boundaries["C"] = 0
-    
-    return boundaries[["parameter","sample","down_cond","up_cond","range","C"]]
-    
-def run_filter_model(model_input,resmap,ID,full_output=False):
-    
-    """ 
-    Function to run environmental filter model
-    
-    Arguments:
-        'model_input' (dictionary): 
-            'inputdata' (pandas df): Biological and environmental measurements
-                                columns: ["sample","ID","taxon","abundance","variable","value",optional="development"]  
-            'parameters' (pandas df): Estimated parameters for habitat preference curves
-                                columns: ["taxon","a1","a2","a3","a4","type"]   
-        'taxon' (str): name of taxon                        
-        'variables' (list): self-explanatory
-        'resmap' (str): name of map to write output
         
+def run_model(model_input,resmap,ID,full_output=False):
+    """ run model 
     
-    Returns:
-        'output' (pandas df): output of environmental filter model
-                            columns: ["sample","ID","taxon","variable","value","a1","a2","a3","a4","type","HSI"]
- 
-
-    """
+    Parameters
+    ----------   
+        'model_inputs' (dictionary):  contains inputdata, interference flag, 
+        logit flag, candidate model parameters for species response curves, 
+        threshold flag, number of input variables K
+        'resmap' (string): path to results map
+        'full_output' (boolean)
+        'ID' (int): unique tag of chromosome
+        
+    Returns
+    -------
+        'performance' (dictionary): values for evaluation measures, number of 
+        data samples, threshold
+    """ 
     
     "Extract inputdata and habitat preference curve parameters"
     inputdata = model_input["data"]
@@ -817,8 +600,7 @@ def run_filter_model(model_input,resmap,ID,full_output=False):
     if full_output==True:
 
         output.to_csv(os.path.join(resmap,str(int(ID))+"-model_run.csv"))
-
-            
+     
     "Calculate criteria"
     from performance import calculate_performance
     
@@ -838,42 +620,65 @@ def run_filter_model(model_input,resmap,ID,full_output=False):
         
         threshold = float(threshold)
         
-    perf = calculate_performance(output,K,evaluate=True,threshold=threshold)  
+    performance = calculate_performance(output,K,evaluate=True,threshold=threshold)  
     
-    return perf     
-   
-def print_optimised_model(parameters,opt_parameters,resmap):
+    return performance     
+           
+def create_dir(resmap,L):
+    """ create directory for output to which results are written to
     
-    variables = []
-    opt_parameters = opt_parameters.reset_index()
-    
-    for i in range(len(opt_parameters)):
+    Parameters
+    ----------   
+        'resmap' (str): name/path of main output directory
         
-        variable,par = opt_parameters["parameter"].iloc[i].split("_")
-        parameters[par][parameters["variable"]==variable] = opt_parameters["sample"].iloc[i]
-        variables.append(variable)
-    
-    return parameters[parameters["variable"].isin(variables)]
-        
-def create_dir(res,L):
-    
+    Returns
+    -------
+        'L' (list): list of names which have to be written under res directory
+    """ 
     for i in range(len(L)):
-        if not os.path.exists(os.path.join(res,L[i])):
-            os.makedirs(os.path.join(res,L[i]))            
+        if not os.path.exists(os.path.join(resmap,L[i])):
+            os.makedirs(os.path.join(resmap,L[i]))            
 
 def print_performance(performance,resmap):
+    """ print performance 'best' model to disk
     
+    Parameters
+    ----------   
+        'performance' (dictionary): values for evaluation measures, number of 
+        data samples, threshold of 'best' found model
+        'resmap' (str): name/path of main output directory
+        
+    Returns
+    -------
+        none
+    """  
     f = open(os.path.join(resmap,"performance.csv"),"w")
     f.write("Criterion,Value\n")
     for i in performance.keys():
         f.write(i+","+str(performance[i])+'\n')
     f.close()
     
-def print_models(inputdata,model_parameters,taxon,interference,settings,chromosomes,resmap):
+def print_models(inputdata,model_parameters,taxon,settings,chromosomes,resmap):
+    """ print all models of population to disk
     
+    Parameters
+    ----------   
+        'inputdata' (pandas df): input data
+        'taxon' (str): name of taxon
+        'model_parameters' (str): model parameters for species response curves        
+        'variables' (pandas df): considered variables 
+        'settings' (dictionary): settings for optimisation
+        'chromosomes' (list):   GA.chromosome objects, each 
+        containing fitness and model parameters      
+         'resmap' (str): name of directory to write output
+        
+    Returns
+    -------
+        none
+    """      
     model_input = {}
     model_input["data"]= inputdata
-    model_input["interference"]=interference
+    model_input["interference"]=settings['interference']
     model_input["settings"] = settings
     model_input["logit"] = settings["logit"]
     model_input["threshold"] = settings["threshold"]
@@ -887,7 +692,7 @@ def print_models(inputdata,model_parameters,taxon,interference,settings,chromoso
             model_input["parameters"] = par_i
             model_input["K"] = K
             #model_input["Kmax"] = 
-            run_filter_model(model_input,os.path.join(resmap,"model_runs"),i.ID,full_output=True)
+            run_model(model_input,os.path.join(resmap,"model_runs"),i.ID,full_output=True)
 
     variables = chromosomes[0].parameters["variable"][~(chromosomes[0].parameters["sample"]==0)].tolist()
     opt_parameters,_ = translate_chromosome(deepcopy(model_parameters.loc[model_parameters["variable"].isin(variables)]),chromosomes[0],mode=settings["mode"])
@@ -900,7 +705,7 @@ if __name__ =="__main__":
     print("="*19)    
     print(" CC BY 4.0 Creative Commons, sacha gobeyn, \n"+
           " sacha.gobeyn at ugent.be OR sachagobeyn at gmail.com")
-    print(" https://github.com/Sachagobeyn/SDMIT \n https://github.com/Sachagobeyn/SDMIT/releases/tag/v2.0.0")
+    print(" https://github.com/Sachagobeyn/SDMIT \n https://github.com/Sachagobeyn/SDMIT/releases/")
     print(" Reading parameterfile and code settings")
        
     "Read parameterfile"
