@@ -26,19 +26,19 @@ def GA(model,model_inputs,boundaries,options,res,full_output=False):
     
     Parameters
     ----------        
-    'model' (str): name of function which has to be optimised
-    'model_inputs' (dictionary): inputs needed to run model
-    'boundaries' (pandas df): boundary conditions for model parameters
-    'options' (dictionary): settings, options and hyper parameters for GA to run
-    'res' (string): name of directory to which results are saved
-    'full_output' (boolean): True or False
+        'model' (str): name of function which has to be optimised
+        'model_inputs' (dictionary): inputs needed to run model
+        'boundaries' (pandas df): boundary conditions for model parameters
+        'options' (dictionary): settings, options and hyper parameters for GA to run
+        'res' (string): name of directory to which results are saved
+        'full_output' (boolean): True or False
     
     Returns
     -------
-    'population.best.performance' (dictionary): values for evaluation measures, 
-    number of data samples, threshold for best found solution    
-    'population.chromosomes' (list): GA.chromosome objects of last iteration 
-    cycle each containing fitness and candidate model parameters
+        'population.best.performance' (dictionary): values for evaluation measures, 
+        number of data samples, threshold for best found solution    
+        'population.chromosomes' (list): GA.chromosome objects of last iteration 
+        cycle each containing fitness and candidate model parameters
     """
     
     print("="*21)
@@ -146,25 +146,25 @@ def load_hyper_parameters(options):
     
     Parameters
     ----------        
-    'options' (dictionary): settings, options and hyper parameters for GA to run
+        'options' (dictionary): settings, options and hyper parameters for GA to run
     
     Returns
     -------
-    'n_chromosomes' (int): population size, number of chromosomes, minimum eight
-    'selection_rate' (float): share of chromosomes of a population which are used 
-    to form next population, between 0. and 1.
-    'mutation_rate' (float): determing the rate/chance of random perturbations 
-    in the solutions (e.g. change a parameter value of species response curve 
-    to a new random value), between 0. and 1.
-    'crossover_rate' (float): determining how the solutions are 'combined' to new solutions 
-    (compare it with the concept of inheritance from parents to offspring) 
-    which typically is set to 1. Between 0. and 1.
-    'criteria' (int): number of runsnumber of iterations for which not improvement 
-    in the objective function has been observed. Stopping condition
-    'duplicates' (boolean): allow duplicates in population (not tested in version 2)
-    'adaptive' (boolean): adaptive changing of hyper parameters over generations
-    (not tested in version 2)
-    'kx': hyper parameters for adapative changing (not tested in version 2)
+        'n_chromosomes' (int): population size, number of chromosomes, minimum eight
+        'selection_rate' (float): share of chromosomes of a population which are used 
+        to form next population, between 0. and 1.
+        'mutation_rate' (float): determing the rate/chance of random perturbations 
+        in the solutions (e.g. change a parameter value of species response curve 
+        to a new random value), between 0. and 1.
+        'crossover_rate' (float): determining how the solutions are 'combined' to new solutions 
+        (compare it with the concept of inheritance from parents to offspring) 
+        which typically is set to 1. Between 0. and 1.
+        'criteria' (int): number of runsnumber of iterations for which not improvement 
+        in the objective function has been observed. Stopping condition
+        'duplicates' (boolean): allow duplicates in population (not tested in version 2)
+        'adaptive' (boolean): adaptive changing of hyper parameters over generations
+        (not tested in version 2)
+        'kx': hyper parameters for adaptive changing (not tested in version 2)
     """    
     n_chromosomes  = int(options["number_of_chromosomes"]);
     selection_rate = float(options["selection_rate"])
@@ -209,16 +209,16 @@ def set_environment_EA(options,res):
     
     Parameters
     ----------        
-    'options' (dictionary): settings, options and hyper parameters for GA to run
-    'res' (string): name of directory to which results are saved
+        'options' (dictionary): settings, options and hyper parameters for GA to run
+        'res' (string): name of directory to which results are saved
     
     Returns
     -------
-    'mode' (string): embedded (variable) or wrapper (binary) feature selection
-    'multi_objective' (bolean): single or multi-objective optimisation
-    'objective_function' (string): criteria to shape fitness of chromosomes
-    'nan_value' (float): value to compute nan (in objective function)
-    'ncpu' (int): number of cpu's to be used for computation, -1 is all cpu available on machine
+        'mode' (string): embedded (variable) or wrapper (binary) feature selection
+        'multi_objective' (bolean): single or multi-objective optimisation
+        'objective_function' (string): criteria to shape fitness of chromosomes
+        'nan_value' (float): value to compute nan (in objective function)
+        'ncpu' (int): number of cpu's to be used for computation, -1 is all cpu available on machine
     """   
     
     " create directory "
@@ -257,13 +257,13 @@ class Population():
     
     Attributes
     -----------
-    'chromosomes' (list): GA.chromosome objects which form the population
-    'n' (int): number of chromosomes 
-    'best' (GA.chromosome object): best solution found in iterations
-    'model' (str): name of model which we  want to optimise
-    'model_input' (dictionary): input for model which we want to optimise
-    'boundaries' (pandas df): boundary conditions for model parameters
-    'objective_function' (str): criteria subject to optimisation
+        'chromosomes' (list): GA.chromosome objects which form the population
+        'n' (int): number of chromosomes 
+        'best' (GA.chromosome object): best solution found in iterations
+        'model' (str): name of model which we  want to optimise
+        'model_input' (dictionary): input for model which we want to optimise
+        'boundaries' (pandas df): boundary conditions for model parameters
+        'objective_function' (str): criteria subject to optimisation
     """
     
     def __init__(self,chromosomes):
@@ -271,7 +271,7 @@ class Population():
          
         Parameters
         -----------
-        'chromosomes' (list): GA.chromosome objects which form the population
+            'chromosomes' (list): GA.chromosome objects which form the population
 
         Returns
         -------    
@@ -287,7 +287,7 @@ class Population():
          
         Parameters
         -----------
-        'chromosome' (GA.chromsome object): holding fitness and genotype
+            'chromosome' (GA.chromsome object): holding fitness and genotype
         
         Returns
         -------    
@@ -301,7 +301,7 @@ class Population():
          
         Parameters
         -----------
-        'chromosome' (GA.chromsome object): holding fitness and genotype
+            'chromosome' (GA.chromsome object): holding fitness and genotype
         
         Returns
         -------    
@@ -314,7 +314,7 @@ class Population():
          
         Parameters
         -----------
-        'chromosomes' (list): GA.chromosome objects which form the population
+            'chromosomes' (list): GA.chromosome objects which form the population
 
         Returns
         -------    
@@ -328,7 +328,7 @@ class Population():
          
         Parameters
         -----------
-        'best' (GA.chromsome object): solution holding best fitness and genotype
+            'best' (GA.chromsome object): solution holding best fitness and genotype
         
         Returns
         -------    
@@ -385,7 +385,7 @@ class Population():
                 "only consider the solution with the best fitness"
                 if i.fitness==best.fitness:
                     "map nan or sample (chromsome string) to a1 to a4 value"
-                    i.mapParameters(np.nan)
+                    i.mapParameters(np.nan,mode)
                     " only for boundaries of continuous variables "
                     cond = self.boundaries["type"]=="continuous"
                     if np.sum(cond)>0:
@@ -410,7 +410,7 @@ class Population():
                 "only consider first rank/front solution with the best fitness"
                 if i.rank==1:
                     "map nan or sample (chromsome string) to a1 to a4 value"                    
-                    i.mapParameters(np.nan)
+                    i.mapParameters(np.nan,mode)
                     " only for boundaries of continuous variables "
                     cond = self.boundaries["type"]=="continuous"
                     if np.sum(cond)>0:
@@ -660,8 +660,6 @@ class Population():
                 performance,solution = jobs[i].get()
                 "set performance criteria to each chromosome"
                 self.chromosomes[i].setPerformance(performance)
-                "set solution to each chromosome"
-                self.chromosomes[i].setSolution(solution)
                 "set criterion which has to be printed to screen"
                 self.chromosomes[i].setPrintCrit(performance["TSS"])
                 "multi/single-objective"
@@ -673,30 +671,28 @@ class Population():
         pool.join()
         
     def singleProcess(self,res,full_output,mode,nan_value,multi_objective=False,final_run=False):
-
         """function starting computation of fitness function, over single processor
         
         Parameters
         -----------
-        'ncpu' (int): number of cpu's to be used for computation, -1 is all cpu available on computer
-        'res' (string): name of directory to which results are saved
-        'full_output' (boolean): True or False
-        'mode' (string): embedded (variable) or wrapper (binary) feature selection
-        'nan_value' (float): value to compute nan (in objective function)            
-        'multi_objective' (bolean): single or multi-objective optimisation
-        'final_run' (boolean): Yes (True), No (False)
+            'ncpu' (int): number of cpu's to be used for computation, -1 is all cpu available on computer
+            'res' (string): name of directory to which results are saved
+            'full_output' (boolean): True or False
+            'mode' (string): embedded (variable) or wrapper (binary) feature selection
+            'nan_value' (float): value to compute nan (in objective function)            
+            'multi_objective' (bolean): single or multi-objective optimisation
+            'final_run' (boolean): Yes (True), No (False)
         
         
         Returns
         -------    
-        none
+            none
         """    
         
         for i in range(len(self.chromosomes)):
             if np.isnan(self.chromosomes[i].fitness):
                 performance,solution = eval(self.model+"(self.model_input,self.boundaries,self.chromosomes[i],mode,nan_value,res,full_output,final_run)")
                 self.chromosomes[i].setPerformance(performance)
-                self.chromosomes[i].setSolution(solution)
                 self.chromosomes[i].setPrintCrit(performance["TSS"])
                 if type(self.objective_function)==list:
                     self.chromosomes[i].setOFs([performance[j] for j in self.objective_function])
@@ -705,7 +701,20 @@ class Population():
                    self.chromosomes[i].setFitness(-performance[self.objective_function] if self.objective_function in minimize else performance[self.objective_function])
             
     def printPopulation(self,res,run,mode,multi_objective,initiate=False):
-
+        """print population of iteration to disk
+        
+        Parameters
+        -----------
+            'res' (string): name of directory to which results are saved
+            'run'  (int): number of iteration/generation
+            'mode' (string): embedded (variable) or wrapper (binary) feature selection
+            'multi_objective' (boolean): single or multi-objective optimisation
+            'initiate' (boolean): flag to indicate whether files have to created yes/no
+            
+        Returns
+        -------    
+            none
+        """  
         "print to seperate file"
         dataframe,parameters = self.transformToOutput(mode,multi_objective)
         #pd.DataFrame(data=data,columns=columns).to_csv(os.path.join(res,str(run)+".csv"))
@@ -726,7 +735,19 @@ class Population():
             parameters.to_csv(os.path.join(res,"model_parameters.csv"),mode='a',header=False)
            
     def transformToOutput(self,mode,multi_objective):
-         
+        """transform the solutions encoded in the genotype to pandas df's which 
+        we can easily write to disk
+        
+        Parameters
+        -----------
+            'mode' (string): embedded (variable) or wrapper (binary) feature selection
+            'multi_objective' (boolean): single or multi-objective optimisation
+        
+        Returns
+        -------    
+            'pd.DataFrame(data=data,columns=columns)[columns]' (dataframe df): dataframe ready to write to disk
+            'self.best.parameters (dataframe df)': model parameters of best solution
+        """  
         
         un_var = self.chromosomes[0].parameters["variable"].unique()
         un_var.sort()
@@ -740,7 +761,7 @@ class Population():
         for i in range(len(self.chromosomes)):
             
             self.chromosomes[i].parameters = self.chromosomes[i].parameters.sort_values("variable")
-            if (mode=="variable") or (mode=="continuous"):
+            if (mode=="variable"):
                 data[i,:-(3+len(perf_keys))] = [0 if (type(j)==int) | (type(j)==np.int64) else " ".join(["%.3f"%k for k in j.returnString()]) for j in self.chromosomes[i].parameters["sample"]]
             elif mode=="binary":
                 data[i,:-(3+len(perf_keys))] = np.array(self.chromosomes[i].parameters["sample"]).ravel()  
@@ -751,12 +772,29 @@ class Population():
                 data[i,-1] = self.chromosomes[i].rank
 
         # get best solution
-        self.best.mapParameters(np.nan)
+        self.best.mapParameters(np.nan,mode)
         self.best.parameters.loc[:,"ID"] = deepcopy(self.best.ID)
        
         return pd.DataFrame(data=data,columns=columns)[columns],self.best.parameters
     
 class chromosome():
+    """ object programming solution (model), fitness of solution as a 'chromosome'
+    
+    Attributes
+    -----------
+        'parameters' (dataframe df): model parameters
+        'performance' (dictionary): values for evaluation measures, number of 
+        data samples, threshold
+        'printCrit' (string): evaluation measure printed to screen
+        'ID' (int): unique tag
+        'fitness' (float): value of objective function
+        'mutated' (boolean): tag indicating whether part of genotype is mutated
+        'f' (int): front
+        'ofs' (list):  objective functions
+        'rank' (int): front
+        'distance' (float): value for crowding distance
+        'protect' (boolean): indicate whether chromosome is protected from mutate
+    """
     
     def __init__(self,parameters):
         
@@ -765,8 +803,8 @@ class chromosome():
         self.printCrit = np.nan
         self.ID = np.nan
         self.fitness = np.nan
-        self.solution = np.nan
         self.mutated= False 
+        self.solution=np.nan
         
         # Information for non-dominated sorting
         self.f = np.nan
@@ -776,64 +814,170 @@ class chromosome():
         self.protect = False
     
     def setProtect(self,protect):
+        """ set project on
+         
+        Parameters
+        -----------
+            'protect' (boolean): indicate whether chromosome is protected from mutate
         
+        Returns
+        -------    
+            none
+        """        
         self.protect = protect
         
     def setPerformance(self,performance):
+        """ appoint performance
+         
+        Parameters
+        -----------
+            'performance' (dictionary): values for evaluation measures, number of 
+            data samples, threshold
         
+        Returns
+        -------    
+            none
+        """               
         self.performance = performance
     
     def setFitness(self,fitness):
-        
+        """ appoint fitness
+         
+        Parameters
+        -----------
+            fitness' (float): value of objective function
+
+        Returns
+        -------    
+            none
+        """          
         self.fitness = fitness
     
     def setPrintCrit(self,printCrit):
-        
+        """ appoint evaluation measure which will be printed to screen
+         
+        Parameters
+        -----------
+            'printCrit' (string): evaluation measure printed to screen
+
+        Returns
+        -------    
+            none
+        """     
         self.printCrit = printCrit
         
     def setOFs(self,ofs):
-        
+        """ appoint values of objective functions used in MOO
+         
+        Parameters
+        -----------
+            'ofs' (list): values for objective functions
+
+        Returns
+        -------    
+            none
+        """             
         self.ofs = ofs
 
     def setID(self,n):
-        
+        """ appoint unique ID
+         
+        Parameters
+        -----------
+            'n' (int): incremented number of chromosomes generated in GA run
+
+        Returns
+        -------    
+            none
+        """                     
         self.ID = n
         
-    def setSolution(self,solution):
-        
-        self.solution = solution
-        
     def setParameters(self,parameters):
-        
+        """ appoint parameters
+         
+        Parameters
+        -----------
+            'parameters' (dataframe df): model parameters
+
+        Returns
+        -------    
+            none
+        """            
         self.parameters = parameters
- 
-    def mapParameters(self,nan_value):
+#
+#    def setSolution(self,solution):
+#        """ appoint solution
+#         
+#        Parameters
+#        -----------
+#            'solution' (dataframe df): model parameters (only used in single/multiprocess function?)
+#            [CHECK]
+#            
+#        Returns
+#        -------    
+#            none
+#        """            
+#        self.solution = solution
         
-        index = self.parameters.index
+    def mapParameters(self,nan_value,mode):
+        """ translate encoded string in 'sample' column of paramaters df to 
+        parameters a1, a2, a3 and a4
+         
+        Parameters
+        -----------
+            'nan_value' (float): value to compute nan (in objective function)            
+            'mode' (string): embedded (variable) or wrapper (binary) feature selection
 
-        for i in index:
-            "if a parameter value is defined in the genotype than map sample it to a1 to a'"
-            "if no parameter value is defined in the genotype, than map nana to a1 to a4" 
-
-            if type(self.parameters.loc[i,"sample"])!=int:
-             
-                 a = ["a"+str(j) for j in range(1,len(self.parameters.loc[i,"sample"].returnString())+1,1)]
+        Returns
+        -------    
+            none
+        """      
+        if mode=="variable":
+            
+            index = self.parameters.index
+    
+            for i in index:
+                "if a parameter value is defined in the genotype than map sample it to a1 to a'"
+                "if no parameter value is defined in the genotype, than map nana to a1 to a4" 
+    
+                if (type(self.parameters.loc[i,"sample"])!=int) & (type(self.parameters.loc[i,"sample"])!=float):
                  
-                 for j in range(len(a)):
-
-                    self.parameters.loc[i,a[j]] = self.parameters.loc[i,"sample"].parameters[j]
-            else:
-                
-                a = ["a1","a2","a3","a4"]
-                
-                for j in a:
+                     a = ["a"+str(j) for j in range(1,len(self.parameters.loc[i,"sample"].returnString())+1,1)]
+                     
+                     for j in range(len(a)):
+                        self.parameters.loc[i,a[j]] = self.parameters.loc[i,"sample"].parameters[j]
+                else:
                     
-                    self.parameters.loc[i,j] = nan_value
+                    a = ["a1","a2","a3","a4"]
+                    
+                    for j in a:
+                        
+                        self.parameters.loc[i,j] = nan_value
                             
     def mutation_operator(self,mutation_rate,mode,ID,adaptive=False,**kwargs):
-        
+        """ mutate the genome of the chromosome
+        NOTE: adaptive mode is not tested in version2 and is adviced to not use
+         
+        Parameters
+        -----------
+            'mutation_rate' (float): determing the rate/chance of random perturbations 
+            in the solutions (e.g. change a parameter value of species response curve 
+             a new random value), between 0. and 1.
+            'mode' (string): embedded (variable) or wrapper (binary) feature selection
+            'ID' (int): unique ID of chromosome
+            'adaptive' (boolean): adaptive changing of hyper parameters over generations
+            (not tested in version 2)
+            'kwargs' (float): kx, hyper parameters for adaptive changing (not tested in version 2)
+       
+        Returns
+        -------    
+            'mutation_flag' (boolean): flag which indicates if genome of chromosome
+            is mutated
+        """
+           
         self.mutated = False
         
+        "adaptive not tested in version 2!"
         if adaptive==True:
             
             fp = self.fitness
@@ -841,6 +985,7 @@ class chromosome():
     
         mutation_flag = False
         
+        "different mutation operators for different encoding"
         if 0<mutation_rate:
          
             mutation_flag = True            
@@ -848,17 +993,13 @@ class chromosome():
             
             if mode == "variable":
                 
-                self.mutation_variable(mutation_rate)
+                mutation_flag = self.mutation_variable(mutation_rate)
             
             if mode == "binary":
                 
-                self.mutation_binary(mutation_rate)
+                mutation_flag = self.mutation_binary(mutation_rate)
         
-            if mode == "continuous":
-            
-                self.mutation_continuous(mutation_rate)
-                
-            self.mutated = True
+            self.mutated =  mutation_flag
             
         return mutation_flag
         
@@ -883,21 +1024,52 @@ class chromosome():
 #        return chromosome
         
     def mutation_binary(self,mutation_rate):
-        
+        """ mutation of binary genome of the chromosome
+         
+        Parameters
+        -----------
+            'mutation_rate' (float): determing the rate/chance of random perturbations 
+            in the solutions, between 0. and 1.
+
+        Returns
+        -------    
+            'mutation_flag' (boolean): flag which indicates if genome of chromosome
+            is mutated
+        """        
         # mutate
         index = self.parameters.index
-        r = random.randrange(0,len(index))        
-        self.parameters.loc[index[r],"sample"] = 1. if self.parameters.loc[index[r],"sample"] == 0. else 0.
+        rc = []
         
-        # set new properties chromosome
+        for i in index:
+            r = True if random.random()<mutation_rate else False
+            rc.append(r)
+            if r==True:
+                self.parameters.loc[i,"sample"] = 1 if self.parameters.loc[i,"sample"] == 0 else 0
+
+        "force recomputation of fitness"
         self.fitness = np.nan
         self.rank  = np.nan
         self.distance = np.nan
+        
+        return True if np.sum(rc)>1 else False
 
     def mutation_variable(self,mutation_rate):
-                    
+        """ mutation of variable length genome of the chromosome
+         
+        Parameters
+        -----------
+            'mutation_rate' (float): determing the rate/chance of random perturbations 
+            in the solutions, between 0. and 1.
+
+        Returns
+        -------    
+            'mutation_flag' (boolean): flag which indicates if genome of chromosome
+            is mutated
+        """      
         index = self.parameters.index
 
+        mutation_flag = False 
+        
         for i in index:
 
             "mutate the parameters OR mutate the presence/absence of a parameter"
@@ -908,36 +1080,48 @@ class chromosome():
                 if (np.random.uniform()>mutation_rate):
                                             
                     self.parameters.loc[i,"sample"].manipulate(mutation_rate)
-                    
+                    mutation_flag = True
                 else:
                     
                     self.parameters.loc[i,"sample"] = 0
             else:
-                
+                "generate new substring with chance equal to mutation rate"
                 if (np.random.uniform()<mutation_rate):
-                                    
+                    mutation_flag = True             
                     self.parameters.loc[i,"sample"] = substring(self.parameters.loc[i,["b1","b2","b3","b4"]],self.parameters.loc[i,"b1"],self.parameters.loc[i,"b4"],4,self.parameters.loc[i,"type"],initiate=True)
 
-
+        "force recomputation of fitness"
         self.fitness = np.nan
         self.rank = np.nan
         self.distance = np.nan
         
-    def mutation_continuous(self,mutation_rate):
+        return mutation_flag
     
-        "mutate every substring bit with equal probability 'mutation_rate'"
-        index = self.parameters.index	
-
-        for i in index:
-            
-            self.parameters.loc[i,"sample"].manipulate(mutation_rate)
-
-        self.fitness = np.nan
-        self.rank = np.nan
-        self.distance = np.nan
+#    def mutation_continuous(self,mutation_rate):
+#    
+#        "mutate every substring bit with equal probability 'mutation_rate'"
+#        index = self.parameters.index	
+#
+#        for i in index:
+#            
+#            self.parameters.loc[i,"sample"].manipulate(mutation_rate)
+#
+#        self.fitness = np.nan
+#        self.rank = np.nan
+#        self.distance = np.nan
            
     def deepcopy_parameters(self):
+        """ deepcopy all references to parameters, to avoid coupling of genomes
+        in memory across several chromosomes
+         
+        Parameters
+        -----------
+            none
 
+        Returns
+        -------    
+            'parameters' (dataframe df): model parameters
+        """      
         parameters = deepcopy(self.parameters)
         index = self.parameters.index	
         
@@ -950,14 +1134,39 @@ class chromosome():
         return parameters             
                  
     def calculatechromosome(self,model,model_inputs,boundaries,objective_function,nan_value,res,full_output=False,final_run=True):
- 
-         self.performance,self.solution = eval(model+"(model_inputs,boundaries,self,nan_value,res,full_output,final_run)")
-         self.setFitness(-self.performance[objective_function])  
+        """ compute model with chromsomes' genotype
 
-    def writeparameterschromosome(self,res):
-        
-        self.parameters["sample"] = [self.parameters["sample"].iloc[j] if type(self.parameters["sample"].iloc[j])==int else np.array2string(self.parameters["sample"].iloc[j].returnString()) for j in range(len(self.parameters))]
-        self.parameters.to_csv(res)
+        Parameters
+        -----------
+            'model' (str): name of model which we  want to optimise
+            'model_input' (dictionary): input for model which we want to optimise
+            'boundaries' (pandas df): boundary conditions for model parameters
+            'objective_function' (str): criteria subject to optimisation
+            'res' (string): name of directory to which results are saved
+            'full_output' (boolean): True or False
+            'nan_value' (float): value to compute nan (in objective function)            
+            'final_run' (boolean): Yes (True), No (False)
+            
+        Returns
+        -------    
+            none
+        """   
+        self.performance,self.solution = eval(model+"(model_inputs,boundaries,self,nan_value,res,full_output,final_run)")
+        self.setFitness(-self.performance[objective_function])  
+
+#    def writeparameterschromosome(self,res):
+#        """ write parameters chromosome to disk
+# 
+#        Parameters
+#        -----------
+#            'res' (string): name of directory to which results are saved
+#            
+#        Returns
+#        -------    
+#            none
+#        """          
+#        self.parameters["sample"] = [self.parameters["sample"].iloc[j] if type(self.parameters["sample"].iloc[j])==int else np.array2string(self.parameters["sample"].iloc[j].returnString()) for j in range(len(self.parameters))]
+#        self.parameters.to_csv(res)
         
 #class bitstring():
 #
@@ -1063,8 +1272,36 @@ class chromosome():
 #    
 
 class substring():
+    """ object encoding substring format for ONE variable in genotype of parameters
     
+    Attributes
+    -----------
+        'boundaries' (pandas df): boundary conditions for model parameters for variable X
+        'parameters' (pands df): model parameters for variable X
+        'type' (string): type of variable, categorical or continuous
+        'initiate' (boolean): flag indicating new values for parameters need to be generated
+        'low': lowett possible value defined for variable
+        'high': highest possible value defined for variable
+        
+    """    
     def __init__(self,boundaries,low,high,n,ctype,initiate=False):
+        """ 
+
+        Parameters
+        ----------- 
+                'boundaries' (list): boundary conditions for model parameters for variable X
+                'parameters' (list): model parameters for variable X
+                'ctype' (string): type of variable, categorical or continuous
+                'initiate' (boolean): flag indicating new values for parameters need to be generated
+                'low' (float): lowett possible value defined for variable
+                'high' (float): highest possible value defined for variable
+                'n' (int): number of parameters for the variable 
+                NOTE: removed from code
+        
+        Returns
+        -------    
+            none
+        """ 
         
         self.boundaries = boundaries
         self.type = ctype
@@ -1079,15 +1316,44 @@ class substring():
         self.high = high
                 
     def returnString(self):
+        """return parameters for variable X
+
+        Parameters
+        ----------- 
+            none
+            
+        Return
+        ------
+            'parameters' (list): model parameters for variable X
+        """
         
         return self.parameters
     
     def setString(self,parameters):
-        
+        """set new parameters for variable X
+
+        Parameters
+        ----------- 
+            'parameters' (list): model parameters for variable X
+            
+        Return
+        ------
+            none
+        """        
         self.parameters = parameters
         
     def manipulate(self,chance):
-#        
+        """manipulate a parameter with a chance equal to the mutation rate
+
+        Parameters
+        ----------- 
+            'chance' (float): mutation rate
+            
+        Return
+        ------
+            none
+        """
+        "allow out of bound mutation by pertubing self.low and self.high with a factor 0.5 (or 1.5)   "      
         if self.type=="continuous":
             
             if np.random.uniform()<chance:
@@ -1115,7 +1381,15 @@ class substring():
                         self.parameters[i] = np.random.uniform(self.low,self.high)
     
     def fixBoundary(self):
-        
+        """repair function for parameters given boundary conditions
+
+        Parameters
+        ----------- 
+            none            
+        Return
+        ------
+            none
+        """        
         self.parameters = [self.low if self.parameters[i]<self.low else self.parameters[i] for i in range(len(self.parameters))] 
         self.parameters = [self.high if self.parameters[i]>self.high else self.parameters[i] for i in range(len(self.parameters))] 
         if self.type=="continuous":
@@ -1123,27 +1397,55 @@ class substring():
         else:
             self.parameters = np.array(self.parameters)
         
-def boundaryStringBit(bitString1,bitString2):
-    
-    "Compare two bitstrings and make sure bitString1 is always <= bitString2"
-    bitInt1 = bitString1.returnInt()
-    bitInt2 = bitString2.returnInt()
-    
-    if (bitInt2<bitInt1):
-        
-        "either we down bitInt1 or rease bitInt2"
-        if np.random.uniform()<0.5:
-            bitInt1 =  bitInt2 - 1 if bitInt2!=0 else 0
-            bitString1.setInt(bitInt1)
-        else:
-            bitInt2 =  bitInt1 + 1 if bitInt1!=np.sum(bitString1.values) else np.sum(bitString1.values)
-            bitString2.setInt(bitInt2)
-
-    return [bitString1,bitString2]
+#def boundaryStringBit(bitString1,bitString2):
+#    
+#    "Compare two bitstrings and make sure bitString1 is always <= bitString2"
+#    bitInt1 = bitString1.returnInt()
+#    bitInt2 = bitString2.returnInt()
+#    
+#    if (bitInt2<bitInt1):
+#        
+#        "either we down bitInt1 or rease bitInt2"
+#        if np.random.uniform()<0.5:
+#            bitInt1 =  bitInt2 - 1 if bitInt2!=0 else 0
+#            bitString1.setInt(bitInt1)
+#        else:
+#            bitInt2 =  bitInt1 + 1 if bitInt1!=np.sum(bitString1.values) else np.sum(bitString1.values)
+#            bitString2.setInt(bitInt2)
+#
+#    return [bitString1,bitString2]
             
             
 def write_logs(n_chromosomes,selection_rate,mutation_rate,crossover_rate,mode,nan_value,adaptive,k1,k2,k3,k4,multi_objective,duplicates,res):
-    
+    """write logs to screen with options and settings
+
+    Parameters
+    ----------- 
+        'n_chromosomes' (int): population size, number of chromosomes, minimum eight
+        'selection_rate' (float): share of chromosomes of a population which are used 
+        to form next population, between 0. and 1.
+        'mutation_rate' (float): determing the rate/chance of random perturbations 
+        in the solutions (e.g. change a parameter value of species response curve 
+        to a new random value), between 0. and 1.
+        'crossover_rate' (float): determining how the solutions are 'combined' to new solutions 
+        (compare it with the concept of inheritance from parents to offspring) 
+        which typically is set to 1. Between 0. and 1.
+        'mode' (string): embedded (variable) or wrapper (binary) feature selection
+        'multi_objective' (boolean): single or multi-objective optimisation
+        'objective_function' (string): criteria to shape fitness of chromosomes
+        'nan_value' (float): value to compute nan (in objective function)
+        'ncpu' (int): number of cpu's to be used for computation, -1 is all cpu available on machine   
+        'duplicates' (boolean): allow duplicates in population (not tested in version 2)
+        'adaptive' (boolean): adaptive changing of hyper parameters over generations
+        (not tested in version 2)
+        'kx': hyper parameters for adaptive changing (not tested in version 2)
+        'res' (string): name of directory to which results are saved
+        
+    Return
+    ------
+        none
+    """
+        
     print(" Running GA with")
     print("\t "+str(n_chromosomes)+" chromosomes")
     print("\t a selection rate of %.2f"%(selection_rate))
@@ -1159,20 +1461,36 @@ def write_logs(n_chromosomes,selection_rate,mutation_rate,crossover_rate,mode,na
     print("="*19)
                     
 def initialize_chromosomes(boundaries,n_chromosomes,mode,ID,nan_value):
+    """
+    Generate a number of chromosomes for the population
     
+    Parameters
+    ----------        
+        'boundaries' (pandas df): boundary conditions for model parameters
+        'n_chromosomes' (int): population size
+        'mode' (string): 'binary' for wrapper feature selection, 'variable for 
+        embedded feature selection
+        'ID' (int): incremented unique tag chromosome
+        'nan_value': nan_value for nan assignment
+    
+    Returns
+    -------
+        'chromosomes' (list): GA.chromosome objects which form the population
+        'ID' (int): 'updated' incremented unique tag chromosome
+    """    
     chromosomes = [0.]*n_chromosomes
     
     for i in range(n_chromosomes):
     
-        # list of lists encoding for MI
+        " list of lists encoding for embedded feature selection"
         if mode == "variable":
             parameters = sample_parameters_variable(boundaries,nan_value)
-        # binary encoding for IVS
+        " list of lists encoding for wrapper feature selection"
         if mode == "binary":
             parameters = sample_parameters_binary(boundaries)
         # continuous encoding for PE
-        if mode == "continuous":
-            parameters = sample_parameters_continuous(boundaries,nan_value)
+#        if mode == "continuous":
+#            parameters = sample_parameters_continuous(boundaries,nan_value)
 
         chromosomes[i] = chromosome(parameters)
         chromosomes[i].setID(deepcopy(ID));ID=ID+1
@@ -1180,6 +1498,31 @@ def initialize_chromosomes(boundaries,n_chromosomes,mode,ID,nan_value):
     return chromosomes,ID
 
 def initialize_population(model,model_inputs,boundaries,objective_function,n_chromosomes,mode,multi_objective,res,ncpu,nan_value,full_output=True):
+    """
+    initialise population with chromosomes, set model environment, first run and 
+    evaluation with assigment of fitness or rank.
+    
+    Parameters
+    ---------- 
+        'model' (str): name of model which we  want to optimise
+        'model_input' (dictionary): input for model which we want to optimise
+        'boundaries' (pandas df): boundary conditions for model parameters
+        'objective_function' (str): criteria subject to optimisation       
+        'n_chromosomes' (int): population size
+        'mode' (string): 'binary' for wrapper feature selection, 'variable for 
+        embedded feature selection
+        'multi_objective' (boolean): single or multi-objective optimisation
+        'res' (string): name of directory to which results are saved
+        'ncpu' (int): number of cpu's to be used for computation, -1 is all cpu available on machine   
+        'nan_value': nan_value for nan assignment
+        'full_output' (boolean): True or False
+    
+    Returns
+    -------
+        'population' (GA.population object): population containing GA.chromosome objects
+        'chromosomes' (list): GA.chromosome objects which form the population
+        'ID' (int): incremented unique tag chromosome
+    """   
     
     # Set first ID
     ID = 0
@@ -1209,30 +1552,42 @@ def initialize_population(model,model_inputs,boundaries,objective_function,n_chr
     return population,run,ID
 
 
-def proces_duplicates(chromosomes,attributes,boundaries,n_chromosomes,n):
-    
-    chromosomes = remove_duplicates(chromosomes,attributes)
-    
-    for i in range(n_chromosomes-len(chromosomes)):
-        
-        new,n = initiate_chromosome(boundaries,n)
-        chromosomes.append(new)
-        
-    return chromosomes,n
+#def proces_duplicates(chromosomes,attributes,boundaries,n_chromosomes,n):
+#    
+#    chromosomes = remove_duplicates(chromosomes,attributes)
+#    
+#    for i in range(n_chromosomes-len(chromosomes)):
+#        
+#        new,n = initiate_chromosome(boundaries,n)
+#        chromosomes.append(new)
+#        
+#    return chromosomes,n
 
-def remove_duplicates(objects,attribute):
-    
-    seen = []
-    unique = []
-    for obj in objects:
-        print(eval('obj.'+str(attribute)))
-        if eval('obj.'+str(attribute)) not in seen:
-            unique.append(obj)
-            seen.append(eval('obj.'+str(attribute)))
-    return unique
+#def remove_duplicates(objects,attribute):
+#    
+#    seen = []
+#    unique = []
+#    for obj in objects:
+#        print(eval('obj.'+str(attribute)))
+#        if eval('obj.'+str(attribute)) not in seen:
+#            unique.append(obj)
+#            seen.append(eval('obj.'+str(attribute)))
+#    return unique
         
 def sample_parameters_variable(boundaries,nan_value):
+    """
+    sample parameter values from the boundary conditions for variable encoding
     
+    Parameters
+    ---------- 
+        'boundaries' (pandas df): boundary conditions for model parameters'ncpu' (int): number of cpu's to be used for computation, -1 is all cpu available on machine   
+        'nan_value': nan_value for nan assignment
+    
+    Returns
+    -------
+        'parameters' (pandas df): model parameters
+
+    """       
     parameters = boundaries.copy(deep=True)
     parameters["sample"] = np.random.randint(2.,size=len(parameters))
     
@@ -1252,72 +1607,96 @@ def sample_parameters_variable(boundaries,nan_value):
     return parameters
     
 def sample_parameters_binary(boundaries):
+    """
+    sample parameter values from the boundary conditions for binary encoding
     
+    Parameters
+    ---------- 
+        'boundaries' (pandas df): boundary conditions for model parameters'ncpu' (int): number of cpu's to be used for computation, -1 is all cpu available on machine   
+    
+    Returns
+    -------
+        'parameters' (pandas df): model parameters
+
+    """         
     parameters = boundaries.copy(deep=True)
     parameters["sample"] = np.random.randint(2.,size=len(parameters))
     
     return parameters
 
     
-def sample_parameters_continuous(boundaries,nan_value):
-    
-    parameters = boundaries.copy(deep=True)
-    parameters["sample"] = 1.
-    
-    for i in ["a1","a2","a3","a4"]:
-        
-        parameters[i] = nan_value
-        
-    "add bits for accute"
-    index = parameters.index
-    
-    for i in index:
-    
-        parameters.loc[i,"sample"] = substring(parameters.loc[i,["b1","b2","b3","b4"]],parameters.loc[i,"b1"],parameters.loc[i,"b4"],4,parameters.loc[i,"type"],initiate=True)
-                
-    return parameters
+#def sample_parameters_continuous(boundaries,nan_value):
+#    
+#    parameters = boundaries.copy(deep=True)
+#    parameters["sample"] = 1.
+#    
+#    for i in ["a1","a2","a3","a4"]:
+#        
+#        parameters[i] = nan_value
+#        
+#    "add bits for accute"
+#    index = parameters.index
+#    
+#    for i in index:
+#    
+#        parameters.loc[i,"sample"] = substring(parameters.loc[i,["b1","b2","b3","b4"]],parameters.loc[i,"b1"],parameters.loc[i,"b4"],4,parameters.loc[i,"type"],initiate=True)
+#                
+#    return parameters
 
+#
+#def check_boundary_conditions(parameters):
+#    
+#    # fix out of boundar
+#    parameters.loc[parameters["sample"]<0,"sample"] = np.random.rand()
+#    parameters.loc[parameters["sample"]>1,"sample"] = np.random.rand()
+#    
+#    # check if conditions apply
+#    index = parameters.index
+#    for i in index:
+#        
+#        if parameters.loc[i,"cond"] !="":
+#            
+#            cond = parameters.loc[i,"cond"].split(" ")
+#            
+#            if cond[0]=="<":
+#
+#                if parameters.loc[i,"cond"] > parameters.loc[parameters["parameter"]==cond[1],"sample"]:
+#                    
+#                    return True
+#                
+#            else:
+#                
+#                if parameters.loc[i,"cond"] < parameters.loc[parameters["parameter"]==cond[1],"sample"]:
+#        
+#                    return True
+#    
+#        else:
+#            
+#            return False
 
-def check_boundary_conditions(parameters):
-    
-    # fix out of boundar
-    parameters.loc[parameters["sample"]<0,"sample"] = np.random.rand()
-    parameters.loc[parameters["sample"]>1,"sample"] = np.random.rand()
-    
-    # check if conditions apply
-    index = parameters.index
-    for i in index:
-        
-        if parameters.loc[i,"cond"] !="":
-            
-            cond = parameters.loc[i,"cond"].split(" ")
-            
-            if cond[0]=="<":
-
-                if parameters.loc[i,"cond"] > parameters.loc[parameters["parameter"]==cond[1],"sample"]:
-                    
-                    return True
-                
-            else:
-                
-                if parameters.loc[i,"cond"] < parameters.loc[parameters["parameter"]==cond[1],"sample"]:
-        
-                    return True
-    
-        else:
-            
-            return False
-
-def initiate_chromosome(boundaries,ID):
-    
-    # generate n_chromosomes-n_keep random samples
-    parameters = sample_parameters_binary(boundaries)
-    new = chromosome(parameters)
-    new.setID(ID);ID=ID+1
-    
-    return new,ID
+#def initiate_chromosome(boundaries,ID):
+#    
+#    # generate n_chromosomes-n_keep random samples
+#    parameters = sample_parameters_binary(boundaries)
+#    new = chromosome(parameters)
+#    new.setID(ID);ID=ID+1
+#    
+#    return new,ID
 
 def evaluate_chromosomes(chromosomes,best):
+    """ check out results of chromosomes' fitness, sort and get best result
+    
+    Parameters
+    ----------
+        'chromosomes' (list): GA.chromosome objects which form the population
+        'best' (GA.chromosome object): best solution found in past iterations
+
+    Returns
+    -------
+        'chromosomes' (list): GA.chromosome objects which form the population
+        'best' (GA.chromosome object): updated best solution found in current iterations
+        
+    """  
     
     # sort chromosomes on performance
     chromosomes.sort(key=operator.attrgetter('fitness'),reverse=True)
@@ -1344,12 +1723,22 @@ def evaluate_chromosomes(chromosomes,best):
     return chromosomes,best
 
 def dominates(f1,f2):    
-# Definition: A solution v(f1) is said to dominate another solution v(f2) if 
-#  1. The solution v(f1) is no worse than v(x2) in all objectives
-#   AND
-#  2. The solution v(f1) is strictly better than v(f2) in at least one objective
-#  REF: Deb, K., 2015. Multi-Objective Evolutionary Algorithms. In: Kacprzyk, J., Pedrycz, W. (Eds.), Springer Handbook of Computational Intelligence. Springer Science+BusinessMedia, Berlin, pp. 995–1015.
-    # v(f1) is no worse than all objectives
+    """Check if solution f1 dominates over f2 or vice versa
+    Definition: A solution v(f1) is said to dominate another solution v(f2) if 
+    1. The solution v(f1) is no worse than v(x2) in all objectives
+    AND
+    2. The solution v(f1) is strictly better than v(f2) in at least one objective
+    REF: Deb, K., 2015. Multi-Objective Evolutionary Algorithms. In: Kacprzyk, J., Pedrycz, W. (Eds.), Springer Handbook of Computational Intelligence. Springer Science+BusinessMedia, Berlin, pp. 995–1015.
+    (f1) is no worse than all objectives
+ 
+    Parameters
+    ----------
+        'f1','f2' (list): values for objective functions for two solutions
+
+    Returns
+    -------
+        'True' or 'False' (boolean): f1 dominates over f2 (True)       
+    """  
     if np.sum([1 if f1[i] >= f2[i] else 0 for i in range(len(f1))])==len(f1): 
         # v(f1) is strictly better in one 
         if np.sum([1 if f1[i] > f2[i] else 0 for i in range(len(f1))])>0:
@@ -1360,7 +1749,20 @@ def dominates(f1,f2):
         return False
             
 def selection(chromosomes,selection_rate,multi_objective):
-
+    """ select number of parents to generate next generation
+    
+    Parameters
+    ----------
+        'chromosomes' (list): GA.chromosome objects which form the population
+        'selection_rate' (float): share of chromosomes of a population which are used 
+        to form next population, between 0. and 1.
+        'multi-objective' (boolean): MOO (True) or SOO (False)
+        NOTE: if MOO, we select based on rank to create a population 2N and then filter to N (see crowding distance)
+        
+    Returns
+    -------
+        'parents' (list): GA.chromosome objects which form the parents
+    """ 
     # how many chromosomes do we keep
     if multi_objective==True:
         selection_rate == 1.
@@ -1380,21 +1782,34 @@ def selection(chromosomes,selection_rate,multi_objective):
         
     return parents
     
-def pairing(chromosomes,n_chromosomes,n_keep,multi_objective):
-
-    parents = []
-    
-    for i in range(int(np.ceil((n_chromosomes-n_keep)/2.))):
-        
-        potential = chromosomes[:]
-        first,potential = tournament_selection(potential,multi_objective)       
-        second,_ = tournament_selection(potential)
-        parents.append([first,second])
-
-    return parents
+#def pairing(chromosomes,n_chromosomes,n_keep,multi_objective):
+#
+#    parents = []
+#    
+#    for i in range(int(np.ceil((n_chromosomes-n_keep)/2.))):
+#        
+#        potential = chromosomes[:]
+#        first,potential = tournament_selection(potential,multi_objective)       
+#        second,_ = tournament_selection(potential)
+#        parents.append([first,second])
+#
+#    return parents
     
 def tournament_selection(potential,multi_objective=False):
 
+    """ select number of parents to generate next generation
+    
+    Parameters
+    ----------
+        'potential' (list): GA.chromosome objects for tournament selection
+        'multi-objective' (boolean): MOO (True) or SOO (False)
+        
+    Returns
+    -------
+        'first' or 'second': GA.chromosome object which won tournament
+        'potential' (list): GA.chromosome objects for tournament selection
+    """ 
+    
     # first parent candidate
     first =  random.choice(potential)
     potential.remove(first)
@@ -1422,7 +1837,28 @@ def tournament_selection(potential,multi_objective=False):
             return second,potential               
        
 def crossover(parents,crossover_rate,mode,n_chromosomes,ID,multi_objective,adaptive=False,**kwargs):
+    """ crossover operator
+    
+    Parameters
+    ---------- 
+        'parents' (list): GA.chromosome objects which form the parents
+        'crossover_rate' (float): determining how the solutions are 'combined' to new solutions 
+        (compare it with the concept of inheritance from parents to offspring)         
+        'mode' (string): 'binary' for wrapper feature selection, 'variable for 
+        'n_chromosomes' (int): population size
+        'ID' (int): incremented unique tag chromosome
+        'multi_objective' (boolean): single or multi-objective optimisation
+        'adaptive' (boolean): adaptive changing of hyper parameters over generations
+        (not tested in version 2)
+        'kwargs': kx, hyper parameters for adaptive changing (not tested in version 2)
+    
+    Returns
+    -------
+        'parents' (list): GA.chromosome objects which form the parents
+        'offspring' (list): GA.chromosome objects which form the offspring
+        'ID' (int): 'updated' incremented unique tag chromosome
 
+    """  
     offspring = [];
     
     if multi_objective==True:
@@ -1467,23 +1903,50 @@ def crossover(parents,crossover_rate,mode,n_chromosomes,ID,multi_objective,adapt
     return parents,offspring,ID
     
 def mating(parent1,parent2,mode,ID):
-        
-    # binary encoding for IVS
+    """ generate two offspring from two parents
+    
+    Parameters
+    ---------- 
+        'parent1','parent2' (GA.chromosome object): two parents
+        'mode' (string): 'binary' for wrapper feature selection, 'variable for 
+        'ID' (int): incremented unique tag chromosome
+
+    Returns
+    -------
+        'offspring' (list): GA.chromosome objects which form the offspring
+        'ID' (int): 'updated' incremented unique tag chromosome
+
+    """  
+
+            
+    " binary encoding for wrapper feature selection"
     if mode == "binary":
         offspring,ID = mating_binary(parent1,parent2,ID)
 
-    # list of lists encoding for MI
+    " binary encoding for embedded feature selection"
     if mode == "variable":
         offspring,ID = mating_variable(parent1,parent2,ID)
 
-    # continuous encoding for PE
-    if mode == "continuous":
-        offspring,ID = mating_continuous(parent1,parent2,ID)
+#    # continuous encoding for PE
+#    if mode == "continuous":
+#        offspring,ID = mating_continuous(parent1,parent2,ID)
             
     return offspring,ID
             
 def mating_binary(parent1,parent2,ID):
+    """ generate two offspring from two parents for binary encoding
+    
+    Parameters
+    ---------- 
+        'parent1','parent2' (GA.chromosome object): two parents
+        'ID' (int): incremented unique tag chromosome
 
+    Returns
+    -------
+        'offspring' (list): GA.chromosome objects which form the offspring
+        'ID' (int): 'updated' incremented unique tag chromosome
+
+    """  
     l = len(parent1.parameters)
     beta= int(np.round(np.random.rand(1)*l))    
     offspring = [0,0]
@@ -1510,7 +1973,20 @@ def mating_binary(parent1,parent2,ID):
     return offspring,ID
 
 def mating_variable(parent1,parent2,ID):
+    """ generate two offspring from two parents for variable encoding
     
+    Parameters
+    ---------- 
+        'parent1','parent2' (GA.chromosome object): two parents
+        'ID' (int): incremented unique tag chromosome
+
+    Returns
+    -------
+        'offspring' (list): GA.chromosome objects which form the offspring
+        'ID' (int): 'updated' incremented unique tag chromosome
+
+    """     
+    "beta outside [0,1] to force solutions to go out of bound"
     betamax  = 2
     alpha = np.random.randint(0,len(parent1.parameters))
     offspring = [0,0]
@@ -1553,42 +2029,61 @@ def mating_variable(parent1,parent2,ID):
 
     return offspring,ID
 
-def mating_continuous(parent1,parent2,ID):
-    
-    offspring = [0,0]
-    parents = [parent1,parent2]
-   
-    for i in range(2):
-        
-        offspring[i] = deepcopy(parents[i])
-        offspring[i].setID(deepcopy(ID));ID=ID+1
-        offspring[i].setFitness(np.nan)
-        
-    sample1 = parent1.parameters["sample"]
-    sample2 = parent2.parameters["sample"]
-
-    beta = np.random.uniform(0,1.5)
-    
-    index = sample1.index
-    
-    for i in index:
-        
-        new1 = deepcopy(offspring[0].parameters.loc[i,"sample"])
-        new2 = deepcopy(offspring[0].parameters.loc[i,"sample"])
-
-        new1.setString(sample1.loc[i].returnString()-beta*(sample1.loc[i].returnString()-sample2.loc[i].returnString()))
-        new1.fixBoundary()
-
-        new2.setString(sample2.loc[i].returnString()+beta*(sample1.loc[i].returnString()-sample2.loc[i].returnString()))  
-        new2.fixBoundary()
-        
-        offspring[0].parameters.loc[i,"sample"] = new1
-        offspring[1].parameters.loc[i,"sample"] = new2
-
-    return offspring,ID
+#def mating_continuous(parent1,parent2,ID):
+#    
+#    offspring = [0,0]
+#    parents = [parent1,parent2]
+#   
+#    for i in range(2):
+#        
+#        offspring[i] = deepcopy(parents[i])
+#        offspring[i].setID(deepcopy(ID));ID=ID+1
+#        offspring[i].setFitness(np.nan)
+#        
+#    sample1 = parent1.parameters["sample"]
+#    sample2 = parent2.parameters["sample"]
+#
+#    beta = np.random.uniform(0,1.5)
+#    
+#    index = sample1.index
+#    
+#    for i in index:
+#        
+#        new1 = deepcopy(offspring[0].parameters.loc[i,"sample"])
+#        new2 = deepcopy(offspring[0].parameters.loc[i,"sample"])
+#
+#        new1.setString(sample1.loc[i].returnString()-beta*(sample1.loc[i].returnString()-sample2.loc[i].returnString()))
+#        new1.fixBoundary()
+#
+#        new2.setString(sample2.loc[i].returnString()+beta*(sample1.loc[i].returnString()-sample2.loc[i].returnString()))  
+#        new2.fixBoundary()
+#        
+#        offspring[0].parameters.loc[i,"sample"] = new1
+#        offspring[1].parameters.loc[i,"sample"] = new2
+#
+#    return offspring,ID
 
 def mutation(chromosomes,mutation_rate,mode,ID,adaptive=False,**kwargs):
+    """ mutation operator
     
+    Parameters
+    ---------- 
+        'chromosomes' (list): GA.chromosome objects in population
+        'mutation_rate' (float): determing the rate/chance of random perturbations 
+        in the solutions (e.g. change a parameter value of species response curve 
+        to a new random value), between 0. and 1.              
+        'mode' (string): 'binary' for wrapper feature selection, 'variable for 
+        'ID' (int): incremented unique tag chromosome
+        'adaptive' (boolean): adaptive changing of hyper parameters over generations
+        (not tested in version 2)
+        'kwargs': kx, hyper parameters for adaptive changing (not tested in version 2)
+    
+    Returns
+    -------
+        'chromosomes' (list): GA.chromosome objects in population
+        'ID' (int): 'updated' incremented unique tag chromosome
+
+    """      
     for i in range(len(chromosomes)):
         
         if chromosomes[i].protect == False:
@@ -1600,13 +2095,35 @@ def mutation(chromosomes,mutation_rate,mode,ID,adaptive=False,**kwargs):
     return chromosomes,ID
 
 def create_dir(res,L):
+    """ create directory for output to which results are written to
     
+    Parameters
+    ----------   
+        'resmap' (str): name/path of main output directory
+        
+    Returns
+    -------
+        'L' (list): list of names which have to be written under res directory
+    """     
     for i in range(len(L)):
         if not os.path.exists(os.path.join(res,L[i])):
             os.makedirs(os.path.join(res,L[i]))      
     
 def print_message(population,run,dt,multi_objective,res):
+    """ print message to screen
     
+    Parameters
+    ----------   
+        'population' (GA.population object): population containing GA.chromosome objects
+        'run' (int): iteration cycle
+        'dt' (deltatime object): delta time iteration cycle
+        'multi_objective': SOO (False)/MOO(True)
+        'res' (str): name/path of main output directory
+        
+    Returns
+    -------
+        none
+    """     
     if multi_objective==True:
         
         TSS = [i.performance["TSS"] for i in population.chromosomes if i.rank==1]

@@ -159,7 +159,7 @@ The Python code is developed in a way it can run as an executable by typing in c
 | stop_criterion  | integer    | - | number of iterations for which not improvement in the objective function has been observed |
 | mutation_rate   | float  | -      | see above, between 0. and 1.   |
 | crossover_rate | float | 1.0     |    see above, between 0. and 1. |
-| selection_rate   | float   | 0.5 | see above, between 0. and 1. |
+| selection_rate   | float   | 0.5 | see above, between 0. and 1., equal to 1. for MOO |
 | duplicates     | boolean | True     |   only tested for True |
 | mode | string | variable     |    wrapper feature (binary) or embedded feature (variable) selection |
 | logit   | boolean   | True | logistic increasing and decreasing function (True) or linear (False) |

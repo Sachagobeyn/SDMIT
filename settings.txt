@@ -9,7 +9,7 @@ mutation_rate 0.10
 crossover_rate 1.
 selection_rate 0.5
 duplicates True
-mode variable
+mode binary
 logit True
 interference squaredproduct
 
