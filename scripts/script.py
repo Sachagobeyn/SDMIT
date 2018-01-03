@@ -590,7 +590,7 @@ def run_model(model_input,resmap,ID,full_output=False):
     
 
     "Get prediction presence/absence"
-    output["prediction"] = output["HSI"]*output["RSI"]
+    output.loc[:,"prediction"] = output["HSI"]*output["RSI"]
     
     "Evaluate model output on presence/absence"
     output.loc[:,"observation"] = 0
