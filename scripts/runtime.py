@@ -7,41 +7,43 @@ Description:
 
 import time
 import datetime
-import numpy as np
 
 class Runtime():
+    """ Class to calculate runtime
     
-    def __init__(self,n,delta_percentage):
+    Attributes
+    -----------
+        't0' (time object): start iteration
+    """
+    def __init__(self):
 
-        # initialize percentages to evaluate 
-        self.p = range(5,100+int(delta_percentage),int(delta_percentage))
-        # initialize time matrix
-        self.time = [0.]*(int(n)+1);
-        # put in first timing
-        self.time[0] = time.time();self.t0=time.time()
-        # hold iterator for self.p
-        self.iter = 0;
+        """ initialisation
+    
+        Parameters
+        ----------
+            none
         
-    def iteration(self,i):
-
-        # calculate current percentrage
-        current_percentage=float(i)/float(len(self.time))*100.
-
-        # if perc is over the fixed one
-        if self.p[self.iter]<current_percentage:
-            # time to do
-            dt=datetime.timedelta(seconds=np.nanmean(self.time[1:i])*(len(self.time)-i))
-            print(str(int(current_percentage))+"% done... "+str(dt)+" remaining ...")
-            # increase iterator for self.p            
-            self.iter+=1  
-        else:
-            # calculate difference in time
-            self.time[i] = time.time()-self.time[0];
-            # save current time in first record of self.time
-            self.time[0] = time.time()
+        Return
+        ------
+            none
+        """
+    
+        # put in first timing
+        self.t0=time.time()
+        # hold iterator for self.p
+        
              
     def close(self,print_value=True):
+        """ close timer
         
+        Parameters
+        ----------
+            print_value (boolean): print to screen
+        
+        Return
+        ------
+            none
+        """        
         dt=datetime.timedelta(seconds=time.time()-self.t0)
 
         if print_value==True:

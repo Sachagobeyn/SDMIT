@@ -6,6 +6,7 @@ Created on Tue Feb 28 11:39:36 2017
 """
 
 from scipy.optimize import fsolve
+import numpy as np
 
 def hyperparameters(l,FE):
 
@@ -30,11 +31,6 @@ def hyperparameters(l,FE):
     'FE/N' (float): an approximate of the (minimum) number of iteration cycles
     """
 
-
-    
-    from scipy.optimize import fsolve
-    import numpy as np
-    
     M = 3
     
     f = lambda x:FE/x*np.log10(1.-1./x)+M+np.log10(np.sqrt(l/12))

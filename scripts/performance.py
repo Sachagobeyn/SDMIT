@@ -12,25 +12,28 @@ from copy import deepcopy
 # x = predicitions
 # y = observations
 
-def calculate_performance(model_output,K,w=0.5,evaluate=False,Kmax=np.nan,threshold=np.nan):
+def calculate_performance(model_output,K,evaluate=False,threshold=np.nan):
     """ 
     Calculate peformance based on the simulated HSI and observed presence/absence (abundance)
-    NOTE: Multiple self-defined formula's can be defined and saved in the dictionary 'criteria'
+    NOTE: Multiple self-defined formula's can be defined 
     
-    Arguments:
+    Parameters
+    ----------
         'model_output' (pandas df), columns
             'HSI' (float): Simulations
             'abundance'(float): Observed abundances                
-        'variables' (list): self-explanatory
+        'K' (int): number of variables
+        'evaluate' (boolean): Yes (True) / No (False)
+        'threshold' (float or string): tag (max, prev) or value for threshold
         
     
-    Returns:
-        'criteria' (dictionary): Dictionary with self-defined criteria
-        NOTE: One of the criteria defined here has to be defined in ga_settingsfile!
- 
+    Returns
+    -------
+        'criteria' (dictionary): Dictionary with evaluation criteria 
     """
     
     criteria = {}
+    
     "extract the predictions (x) and observations (y)"
     x = model_output["prediction"].values
     y = model_output["observation"].values
@@ -67,7 +70,23 @@ def calculate_performance(model_output,K,w=0.5,evaluate=False,Kmax=np.nan,thresh
     return criteria 
     
 def performance_threshold(x,y,criteria,threshold=np.nan,evaluation_criterion="TSS"):
-    """Note: we really need to clean this code up"""
+    """ 
+    Calculate peformance based on the simulated HSI and observed presence/absence (abundance)
+    NOTE: Multiple self-defined formula's can be defined 
+    
+    Parameters
+    ----------
+        'x' (numpy array): predictions
+        'y' (numpy array): observations
+        'criteria' (list): list of criteria (strings)
+        'evaluate_criterion' (string): criteria to define threshold
+        'threshold' (float or string): tag (max, prev) or value for threshold
+        
+    
+    Returns
+    -------
+        'performance': Dictionary with evaluation criteria 
+    """
     performance = {i:0. for i in criteria}
     
     "No threshold defined: Get best from one of the defined criteria"
@@ -117,6 +136,17 @@ def performance_threshold(x,y,criteria,threshold=np.nan,evaluation_criterion="TS
     
          
 def Kappa(X,Y):
+    """ Calculate Kappa
+
+    Parameters:
+    -----------
+        'x' (numpy array): predictions
+        'y' (numpy array): observations
+    
+    Returns:
+    --------
+        'Kappa'
+    """
     
     a = np.sum(X+Y==2)
     b = np.sum(X-Y==1)
@@ -134,12 +164,32 @@ def Kappa(X,Y):
     return (Pa -Pe)/ (1.0 -Pe)
     
 def CCI(X,Y):
+    """ Calculate CCI
+
+    Parameters:
+    -----------
+        'x' (numpy array): predictions
+        'y' (numpy array): observations
     
+    Returns:
+    --------
+        'CCI'
+    """    
     return np.sum(X==Y)/float(len(X))
     
 # sensitivity (Sn): correclty classified as present
 def Sn(x,y):
+    """ Calculate Sn
+
+    Parameters:
+    -----------
+        'x' (numpy array): predictions
+        'y' (numpy array): observations
     
+    Returns:
+    --------
+        'Sn'
+    """    
     if float(sum(x+y==2) + sum(x-y==-1))!=0:
     
         return float(sum(x+y==2)) / float(sum(x+y==2) + sum(x-y == -1))
@@ -149,7 +199,17 @@ def Sn(x,y):
         return 0.
 # specificity (Sp): correclty classified as absent
 def Sp(x,y):
+    """ Calculate Sp
+
+    Parameters:
+    -----------
+        'x' (numpy array): predictions
+        'y' (numpy array): observations
     
+    Returns:
+    --------
+        'Sp'
+    """    
     if float(sum(x+y==0) + sum(x-y==1))!=0:
         
         return float(sum(x+y==0)) / float(sum(x+y==0) + sum(x-y == 1))  
@@ -160,12 +220,32 @@ def Sp(x,y):
         
 # True skill statistic
 def TSS(x,y):
+    """ Calculate TSS
+
+    Parameters:
+    -----------
+        'x' (numpy array): predictions
+        'y' (numpy array): observations
     
+    Returns:
+    --------
+        'TSS'
+    """    
     return Sp(x,y)+Sn(x,y)-1
     
 # Jaccard index  
 def Jaccard(x,y):
+    """ Calculate Jaccard
+
+    Parameters:
+    -----------
+        'x' (numpy array): predictions
+        'y' (numpy array): observations
     
+    Returns:
+    --------
+        'Jaccard'
+    """    
     x = np.array(x,dtype=float)
     y = np.array(y,dtype=float)
     
@@ -173,7 +253,17 @@ def Jaccard(x,y):
 
 #  adjusted Jaccard index: penalty on over- and underprediction
 def aJaccard(x,y):
+    """ Calculate adjusted Jaccard
+
+    Parameters:
+    -----------
+        'x' (numpy array): predictions
+        'y' (numpy array): observations
     
+    Returns:
+    --------
+        'adjusted Jaccard'
+    """    
     x = np.array(x,dtype=float)
     y = np.array(y,dtype=float)
     
@@ -181,12 +271,32 @@ def aJaccard(x,y):
 
 # RMSE
 def fRMSE(x,y):
+    """ Calculate RMSE
+
+    Parameters:
+    -----------
+        'x' (numpy array): predictions
+        'y' (numpy array): observations
     
+    Returns:
+    --------
+        'RMSE'
+    """       
     return np.sqrt(np.sum((x-y)**2)/float(len(x)))
 
 #
 def SSE(x,y):
+    """ Calculate SSE
+
+    Parameters:
+    -----------
+        'x' (numpy array): predictions
+        'y' (numpy array): observations
     
+    Returns:
+    --------
+        'SSE'
+    """          
     return np.sum((x-y)**2)
 
 #def wSSE(x,y,w):
@@ -198,14 +308,34 @@ def SSE(x,y):
 #    return np.sum(w_i*(x-y)**2)
     
 def nAIC(L,N,K):
+    """ Calculate AIC
+
+    Parameters:
+    -----------
+        'x' (numpy array): predictions
+        'y' (numpy array): observations
     
+    Returns:
+    --------
+        'AIC'
+    """          
     vAIC = -2.*np.log(float(L)) + 2.*float(K)
     vAICc = vAIC + float(2*K*(K+1))/float(N-K-1)
     
     return vAIC,vAICc
 
 def nBIC(L,N,K):
+    """ Calculate BIC
+
+    Parameters:
+    -----------
+        'x' (numpy array): predictions
+        'y' (numpy array): observations
     
+    Returns:
+    --------
+        'BIC'
+    """         
     #-2.*np.log(float(L))
     BIC = np.log(N)*float(K)
     

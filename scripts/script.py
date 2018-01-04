@@ -303,6 +303,9 @@ def run(inputdata,taxon,variables,model_parameters,resmap,settings,full_output=F
     """
     
     "Create output map"
+    if os.path.exists(resmap):
+        import shutil
+        shutil.rmtree(resmap)        
     create_dir("",[resmap])
     
     "Load and sample data"
@@ -469,7 +472,7 @@ def compute_fitness(model_inputs,boundaries,chromosome,mode,nan_value,resmap,ful
 
     "Step 4: Print the model if required"
     if full_output==True:
-        parameters.to_csv(os.path.join(resmap,str(int(chromosome.ID))+"-parameters.csv"))
+        inputs["parameters"].to_csv(os.path.join(resmap,str(int(chromosome.ID))+"-parameters.csv"))
     
     return performance,parameters
 
@@ -555,15 +558,15 @@ def run_model(model_input,resmap,ID,full_output=False):
     threshold=model_input["threshold"]
     K =  model_input["K"]
     
-    "Run dispersal filter model"
-    from dispersal import DFM
-    if np.sum(parameters["type"]=="categorical")>0:
-        model = DFM(inputdata,parameters[parameters["type"]=="discrete"])
-        model.run_models()
-        #model.save_model(os.path.join(resmap,str(neighbour)+"_DF.csv"))
-        output_DF = model.interference(interference)
-    else:
-        output_DF = []
+#    "Run dispersal filter model"
+#    from dispersal import DFM
+#    if np.sum(parameters["type"]=="categorical")>0:
+#        model = DFM(inputdata,parameters[parameters["type"]=="categorical"])
+#        model.run_models()
+#        #model.save_model(os.path.join(resmap,str(neighbour)+"_DF.csv"))
+#        output_DF = model.interference(interference)
+#    else:
+#        output_DF = []
         
     "Run environmental model"
     from environmental import EFM
@@ -575,22 +578,22 @@ def run_model(model_input,resmap,ID,full_output=False):
     else: 
         output_EF = []
         
-    "Interfere"   
-    if len(output_DF)==0:
-        output = output_EF
-        output["RSI"] = 1.
-    if len(output_EF)==0:
-        output = output_DF
-        output["HSI"] = 1.
-    if (len(output_EF)!=0) & (len(output_DF)!=0):
-        output = output_DF.merge(output_EF,on=["X","Y","date","sample","taxon"],how="inner")
+    output = deepcopy(output_EF)  
+#    if len(output_DF)==0:
+#        output = output_EF
+#        output["RSI"] = 1.
+#    if len(output_EF)==0:
+#        output = output_DF
+#        output["HSI"] = 1.
+#    if (len(output_EF)!=0) & (len(output_DF)!=0):
+#        output = output_DF.merge(output_EF,on=["X","Y","date","sample","taxon"],how="inner")
 
     "Link observed abundance to model output"
     output = output.merge(inputdata[["X","Y","date","sample","taxon","abundance"]],how="left",on=["sample","taxon"]).drop_duplicates()
     
 
     "Get prediction presence/absence"
-    output.loc[:,"prediction"] = output["HSI"]*output["RSI"]
+    output.loc[:,"prediction"] = output["HSI"]
     
     "Evaluate model output on presence/absence"
     output.loc[:,"observation"] = 0
@@ -665,7 +668,7 @@ def print_models(inputdata,model_parameters,taxon,settings,chromosomes,resmap):
     ----------   
         'inputdata' (pandas df): input data
         'taxon' (str): name of taxon
-        'model_parameters' (str): model parameters for species response curves        
+        'model_parameters' (pandas df): model parameters for species response curves        
         'variables' (pandas df): considered variables 
         'settings' (dictionary): settings for optimisation
         'chromosomes' (list):   GA.chromosome objects, each 
@@ -682,7 +685,9 @@ def print_models(inputdata,model_parameters,taxon,settings,chromosomes,resmap):
     model_input["settings"] = settings
     model_input["logit"] = settings["logit"]
     model_input["threshold"] = settings["threshold"]
+    
     for i in chromosomes:
+        
         variable = i.parameters["variable"][~(i.parameters["sample"]==0)].tolist()
         par_i,K = translate_chromosome(deepcopy(model_parameters[model_parameters["variable"].isin(variable)]),i,settings["mode"])
 #        cond =  ~par_i["grid"].isnull()

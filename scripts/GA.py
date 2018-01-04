@@ -56,9 +56,6 @@ def GA(model,model_inputs,boundaries,options,res,full_output=False):
     
     " Initialize chromosomes and population"
     population,run,ID = initialize_population(model,model_inputs,boundaries,objective_function,n_chromosomes,mode,multi_objective,res,ncpu,nan_value,full_output=full_output)
-
-    " Start timer"
-    t = Runtime(n_chromosomes,100)
        
     " Initiate vector containing best solutions for every generation"
     best_criteria = []
@@ -83,7 +80,7 @@ def GA(model,model_inputs,boundaries,options,res,full_output=False):
         if cond==True:
             
             ' Open runtime'
-            t = Runtime(n_chromosomes,100)
+            t = Runtime()
 
             # If preferable (not tested with latest version) remove duplicates + introduce random chromosomes            
             #if duplicates==False:
@@ -760,6 +757,7 @@ class Population():
         
         for i in range(len(self.chromosomes)):
             
+            self.chromosomes[i].mapParameters(np.nan,mode)
             self.chromosomes[i].parameters = self.chromosomes[i].parameters.sort_values("variable")
             if (mode=="variable"):
                 data[i,:-(3+len(perf_keys))] = [0 if (type(j)==int) | (type(j)==np.int64) else " ".join(["%.3f"%k for k in j.returnString()]) for j in self.chromosomes[i].parameters["sample"]]
@@ -931,7 +929,8 @@ class chromosome():
         Returns
         -------    
             none
-        """      
+        """     
+        
         if mode=="variable":
             
             index = self.parameters.index
@@ -941,7 +940,8 @@ class chromosome():
                 "if no parameter value is defined in the genotype, than map nana to a1 to a4" 
     
                 if (type(self.parameters.loc[i,"sample"])!=int) & (type(self.parameters.loc[i,"sample"])!=float):
-                 
+                    
+
                      a = ["a"+str(j) for j in range(1,len(self.parameters.loc[i,"sample"].returnString())+1,1)]
                      
                      for j in range(len(a)):
@@ -953,7 +953,7 @@ class chromosome():
                     for j in a:
                         
                         self.parameters.loc[i,j] = nan_value
-                            
+                
     def mutation_operator(self,mutation_rate,mode,ID,adaptive=False,**kwargs):
         """ mutate the genome of the chromosome
         NOTE: adaptive mode is not tested in version2 and is adviced to not use
@@ -982,15 +982,10 @@ class chromosome():
             
             fp = self.fitness
             mutation_rate = kwargs["k2"]*(kwargs["fmax"]-fp)/(kwargs["fmax"]-kwargs["fmean"]) if fp>=kwargs["fmean"] else kwargs["k2"]        
-    
-        mutation_flag = False
-        
+            
         "different mutation operators for different encoding"
         if 0<mutation_rate:
-         
-            mutation_flag = True            
-            self.setID(deepcopy(ID))
-            
+                     
             if mode == "variable":
                 
                 mutation_flag = self.mutation_variable(mutation_rate)
@@ -1526,7 +1521,7 @@ def initialize_population(model,model_inputs,boundaries,objective_function,n_chr
     
     # Set first ID
     ID = 0
-    t = Runtime(n_chromosomes,100.)
+    t = Runtime()
     # Initialize chromosomes
     chromosomes,ID = initialize_chromosomes(boundaries[["variable","type","low","b1","b2","b3","b4","high","a1","a2","a3","a4"]],n_chromosomes,mode,ID,nan_value)
     # Initialize population
@@ -2089,9 +2084,11 @@ def mutation(chromosomes,mutation_rate,mode,ID,adaptive=False,**kwargs):
         if chromosomes[i].protect == False:
             mutation_flag = chromosomes[i].mutation_operator(mutation_rate,mode,ID,adaptive=adaptive,**kwargs)
             if mutation_flag == True:
+                chromosomes[i].setID(ID)
                 ID = ID+ 1
         else:
             chromosomes[i].setProtect(False)
+            
     return chromosomes,ID
 
 def create_dir(res,L):
@@ -2124,14 +2121,16 @@ def print_message(population,run,dt,multi_objective,res):
     -------
         none
     """     
+
+
     if multi_objective==True:
         
         TSS = [i.performance["TSS"] for i in population.chromosomes if i.rank==1]
-        print("Generation ("+str(run)+"): Max(TSS) = %.3f (average first front (+-std): %.3f (%.3f))"%(np.max(TSS),np.mean(TSS),np.std(TSS))+"\t (runtime: "+str(dt)+" seconds)")
+        print("Generation ("+str(run)+"): Max(TSS) = %.3f (average first front (+-std): %.3f (%.3f))"%(np.max(TSS),np.mean(TSS),np.std(TSS))+"\t (runtime: "+str(dt)+" seconds, one run takes appr.  %0.2f seconds)"%(float(dt.seconds)/population.n))
 
     else:
         fitness = [i.fitness for i in population.chromosomes]
-        print("Generation ("+str(run)+"): Max(fitness) = %.3f (average (+-std): %.3f (%.3f))"%(np.max(fitness),np.mean(fitness),np.std(fitness))+"\t (runtime: "+str(dt)+" seconds)")
+        print("Generation ("+str(run)+"): Max(fitness) = %.3f (average (+-std): %.3f (%.3f))"%(np.max(fitness),np.mean(fitness),np.std(fitness))+"\t (runtime: "+str(dt)+" seconds, one run takes appr.  %0.2f seconds)"%(float(dt.seconds)/population.n))
       
     #write message to file
     if os.path.exists(os.path.join(res,"iterations.txt")):

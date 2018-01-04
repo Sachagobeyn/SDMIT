@@ -6,26 +6,23 @@ Description:
 """
 import pandas as pd
 import numpy as np
-import sys
 
 def load_and_preproces_data(inputdata,taxon,filter_parameters,variables,res,nan_value):
-    """ 
-    Load data and variables list and sample the data
+    """ Load data and variables list
     
-    Arguments:
-        
+    Parameters
+    ----------  
             'inputdata' (str): name of inputdata 
-            NOTE: structure inputdata should be conform Section XX tutorial
             'variables' (str): name of variables
-            NOTE: structure variables should be conform Section XX tutorial
             'taxon' (str): name of the taxon
             'res' (str): name of directory to write output
     
-    Returns:
+    Returns
+    -------
         'inputdata' (pandas df): Biological and environmental measurements
-                            columns: ["ID","taxon","abundance","variable","value","development"]
+                            columns: ["ID","taxon","abundance","variable","value"]
         'variables' (pandas df): List of considered variables
-                            columns: ["variable","consider"]                            
+                            columns: ["variable","name_sim","consider"]                            
     """
     "Load inputdata"
     [inputdata,variables,filter_parameters] = load_data([inputdata,variables,filter_parameters])
@@ -37,8 +34,11 @@ def load_and_preproces_data(inputdata,taxon,filter_parameters,variables,res,nan_
     "Extract data for considered taxon and variables"
     inputdata = extract(inputdata,variables,taxon)
     from resample import resample_data
+    
     " In earlier versions of code, automatic resampling option was available"
     " However, now resampling should be done outside SDMIT"
+    "Part of code is left to assign unique ID's to each biological sample"
+
     resample = "False"
     inputdata = resample_data(inputdata,resample)
 
@@ -48,15 +48,14 @@ def load_and_preproces_data(inputdata,taxon,filter_parameters,variables,res,nan_
     return inputdata,filter_parameters,variables
 
 def load_data(files):
-    """ 
-    Load multiple ".csv" files in pandas dataframes
+    """Load multiple ".csv" files in pandas dataframes
     
-    Arguments:
-        
+    Parameters
+    ---------- 
         'files' (list): Files (str) which should be read to pandas dataframes
     
-    Returns:
-    
+    Returns
+    -------
         'data' (list): Pandas dataframes                        
     """
     
@@ -69,22 +68,21 @@ def load_data(files):
     return data
 
 def extract(inputdata,variables,taxon):
-    """ 
-    Extract/filter inputdata for the specified variables and taxon
+    """Extract/filter inputdata for the specified variables and taxon
     
-    Arguments:
-    
+    Parameters
+    ---------- 
         'inputdata' (pandas df): Biological and environmental measurements
-                            columns: ["ID","taxon","abundance","variable","value",optional="development"]
+                            columns: ["ID","taxon","abundance","variable","value"]
 
         'variables' (pandas df): List of considered variables
-                            columns: ["variable","consider"] 
+                            columns: ["variable","name_sim',"consider"] 
         'taxon' (str): name of the taxon    
         
-    Returns:
-    
+    Returns
+    -------
         'inputdata' (pandas df): Biological and environmental measurements
-                            columns: ["ID","taxon","abundance","variable","value",optional="development"]                     
+                            columns: ["ID","taxon","abundance","variable","value"]               
     """
     
     "Extract data for taxon and variables "
@@ -98,7 +96,20 @@ def extract(inputdata,variables,taxon):
     return inputdata
 
 def fix_nan(inputdata,nan_value):
+    """insert nan_value for empty records in X, Y and date
+    
+    Parameters
+    ---------- 
+        'inputdata' (pandas df): Biological and environmental measurements
+                            columns: ["ID","taxon","abundance","variable","value"]
 
+        'nan_value' (float): value for nan value    
+        
+    Returns
+    -------
+        'inputdata' (pandas df): Biological and environmental measurements
+                            columns: ["ID","taxon","abundance","variable","value"]             
+    """
     col = ["date","X","Y"]
 
     for i in col:

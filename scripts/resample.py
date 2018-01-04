@@ -10,7 +10,10 @@ import random
 from copy import deepcopy
 import numpy as np
 
-def resample_data(inputdata,resample):
+"""NOTE: main functionalities in function are not used as responsability of resampling
+is r
+"""
+def resample_data(inputdata,resample=False):
 
     """ 
     Resampling protocol to sample for model development and optimisation
@@ -21,14 +24,12 @@ def resample_data(inputdata,resample):
         'inputdata' (pandas df): Biological and environmental measurements
                             columns: ["ID","taxon","abundance","variable","value"]
 
-        'res' (str): name of directory to write output  
-        
-        'full_output' (bool): self-explanatory
+        'resample' (boolean): Yes (True) or No (False)
         
     Returns:
     
         'inputdata' (pandas df): Biological and environmental measurements
-                            columns: ["ID","taxon","abundance","variable","value","development"]                     
+                            columns: ["ID","taxon","abundance","variable","value"]                     
     """
     
     inputdata = algorithm(inputdata,resample)
@@ -38,8 +39,7 @@ def resample_data(inputdata,resample):
 def algorithm(inputdata,resample):
     """
     
-    NOTE: CHANGE COMMENTS
-    Algorithm to sample for model development and optimisation$
+    NOTE: ONLY USED TO ASSIGN IDs
     Arguments:
     
         'inputdata' (pandas df): Biological and environmental measurements
@@ -51,7 +51,7 @@ def algorithm(inputdata,resample):
     Returns:
     
         'inputdata' (pandas df): Biological and environmental measurements
-                            columns: ["ID","X","Y",[fields],"taxon","abundance","variable","value","development"]      
+                            columns: ["ID","X","Y",[fields],"taxon","abundance","variable","value"]      
     """
     
     "IDs"
@@ -65,7 +65,11 @@ def algorithm(inputdata,resample):
     
     "Resample: yes/no"
     if eval(resample):
-        
+    
+        import sys        
+        print("[PROGRAMMED EXIT] \n\t"+"Resampling is not implemented in SDMIT version 2!")
+        sys.exit("="*19)         
+
         for i in sample_IDs:
 
             s = inputdata[inputdata["ID"] == i]
