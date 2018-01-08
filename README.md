@@ -1,4 +1,5 @@
-# SDMIT
+# SDMIT [![DOI](https://zenodo.org/badge/74664226.svg)](https://zenodo.org/badge/latestdoi/74664226)
+
 Python scripts to develop and perform model identification
 
 © 2017, Sacha Gobeyn (sacha.gobeyn@ugent.be or sachagobeyn@gmail.com). 
