@@ -5,8 +5,6 @@ Python scripts to develop and perform model identification
 © 2017, Sacha Gobeyn (sacha.gobeyn@ugent.be or sachagobeyn@gmail.com). 
 
 Details: Script can be run from a (I)python editor or command line. Designed for batch simulations
- 
-Publication: This code is coupled to a publication, it is advised to first read the publication.
 
 Requirements (tested with):
   * Python 3.5.4
