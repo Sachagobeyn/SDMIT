@@ -303,9 +303,9 @@ def run(inputdata,taxon,variables,model_parameters,resmap,settings,full_output=F
     """
     
     "Create output map"
-    if os.path.exists(resmap):
-        import shutil
-        shutil.rmtree(resmap)        
+    #if os.path.exists(resmap):
+    #    import shutil
+    #    shutil.rmtree(resmap)        
     create_dir("",[resmap])
     
     "Load and sample data"
