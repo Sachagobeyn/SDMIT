@@ -22,8 +22,6 @@ Note: Should run cross OS
 
 Support: Please feel free to open an issue in case of a problem.
 
-Licensed under [ CC BY 4.0 Creative Commons](https://creativecommons.org/licenses/by/4.0/ "CC")
-
 ## Section 1: What can we do with SDMIT?
 
 The species distribution model identification tool is a software tool based on machine learning that aims to train species distribution models with genetic algorithms. The implemented SDM is a habitat suitability model, aiming to define the relation 
