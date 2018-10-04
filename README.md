@@ -179,7 +179,7 @@ The Python code is developed in a way it can run as an executable by typing in c
 
 With the given example input files, we should be able to do a test run of the code. There are two options:
 
-1. Run the model in command-line by going to the folder 'SDMIT/script.py' and typing 'python scripts/script.py parameterfile.txt'
+1. Run the model in command-line by going to the folder 'SDMIT' and typing 'python SDMIT.py parameterfile.txt'
 
 2. Open your favorite IDE (spyder, pycharm, ..) and run script.py. It is important to note that script.py will only run in this mode if you use the correct name in the main function:
 
