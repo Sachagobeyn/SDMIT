@@ -1,7 +1,7 @@
 nan_value	100000000000000
 multi_objective False
 objective_function TSS
-ncpu	-1
+ncpu	1
 number_of_chromosomes 50
 maximum_runs 5
 stop_criteria 5

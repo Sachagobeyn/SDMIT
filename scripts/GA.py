@@ -9,7 +9,7 @@ import numpy as np
 import operator
 from copy import deepcopy
 import random
-from script import *
+from SDMIT import *
 import shutil
 import os
 import pandas as pd
@@ -1452,7 +1452,7 @@ def write_logs(n_chromosomes,selection_rate,mutation_rate,crossover_rate,mode,na
     #print(" Local optimisation: %s"%str(local_optimisation))
     print(" Duplicates allowed: %s"%str(duplicates))
     print(" Multi-objective optimisation %s"%str(multi_objective))
-    print(" Writing to .\%s"%res)
+    print(" Writing to %s"%res)
     print("="*19)
                     
 def initialize_chromosomes(boundaries,n_chromosomes,mode,ID,nan_value):

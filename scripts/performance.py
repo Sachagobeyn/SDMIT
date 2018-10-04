@@ -63,9 +63,9 @@ def calculate_performance(model_output,K,evaluate=False,threshold=np.nan):
         criteria["threshold"] = performance["threshold"]
         
         "Calculate AUC"
-        from sklearn.metrics import roc_curve,auc
-        fpr, tpr, _ = roc_curve(y,x)
-        criteria["AUC"] = auc(fpr,tpr)
+        from sklearn import metrics
+        fpr, tpr, _ = metrics.roc_curve(y,x)
+        criteria["AUC"] = metrics.auc(fpr,tpr)
 
     return criteria 
     
