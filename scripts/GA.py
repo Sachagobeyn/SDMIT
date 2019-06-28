@@ -1069,7 +1069,7 @@ class chromosome():
 
             "mutate the parameters OR mutate the presence/absence of a parameter"
         
-            if type(self.parameters.loc[i,"sample"])!=int:
+            if (type(self.parameters.loc[i,"sample"])!=int) & (type(self.parameters.loc[i,"sample"])!=np.int64):
                 
                 "Switch parameter off with probability equal to the mutation rate"
                 if (np.random.uniform()>mutation_rate):
